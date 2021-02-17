@@ -5,6 +5,10 @@ import router from './router';
 import '../node_modules/bootstrap/dist/css/bootstrap.css';
 import 'vue-flash-message/dist/vue-flash-message.min.css';
 
+import axios from 'axios';
+axios.defaults.withCredentials = true;
+Vue.prototype.$http = axios;
+
 Vue.config.productionTip = false;
 
 Vue.use(VueFlashMessage, {

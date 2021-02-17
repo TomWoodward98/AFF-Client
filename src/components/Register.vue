@@ -89,7 +89,6 @@
 </template>
 
 <script>
-import axios from 'axios';
 
 export default {
   name: 'Register',
@@ -132,7 +131,7 @@ export default {
 
       const baseURL = 'http://localhost:3000/api/register';
 
-      axios.post(baseURL,
+      this.$http.post(baseURL,
         {
           email: this.email.trim(),
           password: this.password.trim(),

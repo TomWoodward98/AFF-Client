@@ -101,74 +101,80 @@
 </template>
 
 <script>
-import axios from 'axios';
 
 export default {
-  name: 'Login',
-  data() {
-    return {
-      email: '',
-      email_error: false,
-      password: '',
-      password_error: false,
-      server_error: false,
-      loggingIn: false,
-      errors: false,
-    };
-  },
-  methods: {
-    submitForm() {
-      let failed = false;
-      this.email_error = false;
-      this.password_error = false;
-      this.server_error = false;
-      if (this.email.trim() === '') {
-        failed = true;
-        this.email_error = 'Please enter your email';
-      }
-
-      if (this.password.trim() === '') {
-        failed = true;
-        this.password_error = 'Please enter your password';
-      }
-
-      if (failed) {
-        return false;
-      }
-
-      this.loggingIn = true;
-
-      const baseURL = 'http://localhost:3000/api/login';
-
-      axios.post(baseURL,
-        {
-          email: this.email.trim(),
-          password: this.password.trim(),
-        }).then(((response) => {
-        if (response.data.Error) {
-            this.errors = true;
-            this.loggingIn = false;
-            const sentError = response.data;
-            this.handleErrors(sentError);
-        } else if (response.data.Success) {
-            this.errors = false;
-            this.confirmation = true;
-        }
-      }));
-      return true;
+    name: 'Login',
+    data() {
+        return {
+            email: '',
+            email_error: false,
+            password: '',
+            password_error: false,
+            server_error: false,
+            loggingIn: false,
+            errors: false,
+        };
     },
-    handleErrors(error) {
-        if (error.Error[0].email) {
-            this.email_error = error.Error[0].email;
-        }
-        if (error.Error[1].password) {
-            this.password_error = error.Error[1].password;
-        }
-        if (error.Error[0].server) {
-            this.server_error = error.Error[0].server;
-        }
+    methods: {
+        submitForm() {
+            let failed = false;
+            this.email_error = false;
+            this.password_error = false;
+            this.server_error = false;
+            if (this.email.trim() === '') {
+                failed = true;
+                this.email_error = 'Please enter your email';
+            }
+
+            if (this.password.trim() === '') {
+                failed = true;
+                this.password_error = 'Please enter your password';
+            }
+
+            if (failed) {
+                return false;
+            }
+
+            this.loggingIn = true;
+
+            const baseURL = 'http://localhost:3000/api/login';
+
+            this.$http.post(baseURL,
+                {
+                    email: this.email.trim(),
+                    password: this.password.trim(),
+                }).then(((response) => {
+                    if (response.data.Error) {
+                        this.errors = true;
+                        this.loggingIn = false;
+                        const sentError = response.data;
+                        this.handleErrors(sentError);
+                    } else if (response.data.Success) {
+                        this.errors = false;
+                        this.confirmation = true;
+                        localStorage.setItem('user', JSON.stringify(response.data.Success.user));
+                        localStorage.setItem('jwt', response.data.Success.jwt);
+
+                        if (localStorage.getItem('jwt') != null) {
+                            this.$router.push('home')
+                        }
+                    }
+                }
+            ));
+            return true;
+        },
+        handleErrors(error) {
+            if (error.Error[0].email) {
+                this.email_error = error.Error[0].email;
+            }
+            if (error.Error[1].password) {
+                this.password_error = error.Error[1].password;
+            }
+            if (error.Error[0].server) {
+                this.server_error = error.Error[0].server;
+            }
+        },
     },
-  },
 };
 </script>
 
