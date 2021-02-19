@@ -31,14 +31,30 @@ export default new Router({
     {
       path: '/home',
       component: Home,
-      beforeEnter: (to, from, next) => {
-        if (localStorage.getItem('jwt') != null) {
-          next();
-        } else {
-          next('/welcome');
-        }
-      },
       // if user authed
+      // beforeEnter: (to, from, next) => {
+      //   if (localStorage.getItem('jwt') != null) {
+      //     next();
+      //   } else {
+      //     next('/welcome');
+      //   }
+      // },
+      //TODO - Show Tanni this and see if it's any better
+      beforeEnter: (to, from, next) => {
+        const cookie = localStorage.getItem('jwt');
+        fetch('http://localhost:3000/checkToken', {
+          headers: {
+            ['x-access-token']: cookie,
+          }
+        })
+        .then(res => {
+          if (res.status === 200) {
+            next()
+          } else {
+            next('/welcome')
+          }
+        });
+      },
     },
   ],
 });
