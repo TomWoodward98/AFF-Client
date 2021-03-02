@@ -152,12 +152,7 @@ export default {
                     } else if (response.data.Success) {
                         this.errors = false;
                         this.confirmation = true;
-                        localStorage.setItem('user', JSON.stringify(response.data.Success.user));
-                        localStorage.setItem('jwt', response.data.Success.jwt);
-
-                        if (localStorage.getItem('jwt') != null) {
-                            this.$router.push('home')
-                        }
+                        this.$router.push('home');
                     }
                 }
             ));

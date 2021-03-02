@@ -1,8 +1,8 @@
 import Vue from 'vue';
-import VueCookies from 'vue-cookies';
 import VueFlashMessage from 'vue-flash-message';
 import App from './App.vue';
 import router from './router';
+import './style/main.css'
 import '../node_modules/bootstrap/dist/css/bootstrap.css';
 import 'vue-flash-message/dist/vue-flash-message.min.css';
 
@@ -11,8 +11,6 @@ axios.defaults.withCredentials = true;
 Vue.prototype.$http = axios;
 
 Vue.config.productionTip = false;
-
-Vue.use(VueCookies);
 
 Vue.use(VueFlashMessage, {
   messageOptions: {
