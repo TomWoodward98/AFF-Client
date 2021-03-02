@@ -164,6 +164,9 @@ export default {
                     this.creatingTicket = false;
                     this.handleErrors(this.errors);
                 } else {
+                    console.log('ticket: ', response.data)
+                    this.$emit('ticketCreated', response.data);
+                    // Event emit where we get the created ticket 
                     $('#' + this.dataTarget).modal('hide')
                 }
             });

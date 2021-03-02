@@ -5,8 +5,15 @@
                 <div class="col-12">
                     <p>Open</p>
                 </div>
-                <div v-for="ticket in tickets" :key="ticket.id" class="col-12 my-1 mr-1 bg-light-grey">
-                    <p>{{ ticket.name }}</p>
+                <div v-for="ticket in tickets" :key="ticket.id" class="col-12 my-1">
+                    <div class="row">
+                        <div class="col-12 cursor-pointer">
+                            <div class="col-12 p-3 bg-grey">
+                                
+                            <p>{{ ticket.title }}</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -34,8 +41,11 @@ export default {
     name: "TicketColumns",
     data() {
         return {
-            
+
         };
+    },
+    props: {
+        tickets: Array,
     },
     mounted() {
 
@@ -43,10 +53,6 @@ export default {
     methods: {
         
     },
-    props: {
-        
-    },
-
 }
 </script>
 

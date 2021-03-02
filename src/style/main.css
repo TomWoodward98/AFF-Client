@@ -1,5 +1,8 @@
 
 /* Colours */
+.bg-grey {
+    background-color: rgb(155, 155, 155);
+}
 .bg-light-grey {
     background-color: lightgrey;
 }
@@ -7,6 +10,11 @@
 /* Flex */
 .flex-nowrap {
     flex-wrap: nowrap;
+}
+
+/* Pointer Options */
+.cursor-pointer {
+    cursor: pointer;
 }
 
 /* Scroll */

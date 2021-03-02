@@ -18,11 +18,12 @@
               </button>
               <create-ticket
                   dataTarget="createTicketModal"
+                  @ticketCreated="addTicket($event)"
               ></create-ticket>
           </div>
         </div>
         <ticket-columns
-          :tickets=tickets
+            :tickets="tickets"
         ></ticket-columns>
     </div>
 </template>
@@ -46,11 +47,14 @@ export default {
   },
   mounted() {
       this.$http.get('http://localhost:3000/ticket/get-tickets').then(response => {
-          this.tickets = response.data.tickets;
+          this.tickets = response.data;
       });
   },
   methods: {
-
+      addTicket(ticket) {
+        console.log('ticket 2: ', ticket);
+          this.tickets.push(ticket);
+      }
   },
 };
 </script>
