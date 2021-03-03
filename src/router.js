@@ -4,6 +4,8 @@ import Welcome from './components/Welcome.vue';
 import Login from './components/Login.vue';
 import Register from './components/Register.vue';
 import Home from './components/Home.vue';
+import Users from './components/user/Users.vue';
+import Departments from './components/department/Departments.vue';
 import axios from 'axios';
 
 Vue.use(Router);
@@ -32,6 +34,34 @@ export default new Router({
     {
       path: '/home',
       component: Home,
+      beforeEnter: (to, from, next) => {
+        axios.get('http://localhost:3000/checkToken')
+        .then(res => {
+          if (res.status === 200) {
+            next()
+          }
+        }).catch(function(error) { 
+          next('/welcome')
+        });
+      },
+    },
+    {
+      path: '/users',
+      component: Users,
+      beforeEnter: (to, from, next) => {
+        axios.get('http://localhost:3000/checkToken')
+        .then(res => {
+          if (res.status === 200) {
+            next()
+          }
+        }).catch(function(error) { 
+          next('/welcome')
+        });
+      },
+    },
+    {
+      path: '/departments',
+      component: Departments,
       beforeEnter: (to, from, next) => {
         axios.get('http://localhost:3000/checkToken')
         .then(res => {

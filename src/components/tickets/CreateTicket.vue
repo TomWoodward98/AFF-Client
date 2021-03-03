@@ -88,11 +88,31 @@
                                     <option value=""></option>
                                     <option v-for="user in users" :key="user.id" :value="user">{{ user.email }}</option>
                                 </select>
+                            </div>
+                        </div>
+                        <div class="form-group row mb-0">
+                            <div class="col-12 text-left">
+                                <label for="title">Raised by</label>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-12">
+                                <select
+                                    autocomplete="off"
+                                    class="form-control"
+                                    :class="{ 'is-invalid' : raisedBy_error }"
+                                    id="raisedBy"
+                                    name="raisedBy"
+                                    v-model="form.raisedBy"
+                                >
+                                    <option value=""></option>
+                                    <option v-for="user in users" :key="user.id" :value="user">{{ user.email }}</option>
+                                </select>
                                 <span
                                     class="invalid-feedback"
                                     role="alert"
-                                    v-if="info_error">
-                                    <strong>{{ info_error }}</strong>
+                                    v-if="raisedBy_error">
+                                    <strong>{{ raisedBy_error }}</strong>
                                 </span>
                             </div>
                         </div>
@@ -117,10 +137,12 @@ export default {
                 title: '',
                 info: '',
                 allocatedTo: null,
+                raisedBy: null,
             },
             title_error: false,
             info_error: false,
             allocated_error: false,
+            raisedBy_error: false,
         };
     },
     props: {
@@ -142,6 +164,7 @@ export default {
             this.title_error = false;
             this.info_error = false;
             this.allocated_error = false;
+            this.raisedBy_error = false;
 
             if (this.form.title.trim() === '') {
                 failed = true;
@@ -150,7 +173,12 @@ export default {
 
             if (this.form.info.trim() === '') {
                 failed = true;
-                this.info_error = 'Please a description of the ticket'
+                this.info_error = 'Please give a description of the ticket'
+            }
+
+            if (this.form.raisedBy === null) {
+                failed = true;
+                this.raisedBy_error = 'Please select who raised the ticket'
             }
 
             if (failed) {
@@ -164,7 +192,10 @@ export default {
                     this.creatingTicket = false;
                     this.handleErrors(this.errors);
                 } else {
-                    console.log('ticket: ', response.data)
+                    this.form.title = '';
+                    this.form.info = '';
+                    this.form.allocatedTo = null;
+                    this.form.raisedBy = null;
                     this.$emit('ticketCreated', response.data);
                     // Event emit where we get the created ticket 
                     $('#' + this.dataTarget).modal('hide')
