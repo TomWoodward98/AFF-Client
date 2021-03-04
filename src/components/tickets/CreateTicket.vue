@@ -132,7 +132,6 @@ export default {
     name: "CreateTicket",
     data() {
         return {
-            users: null,
             form : {
                 title: '',
                 info: '',
@@ -147,15 +146,7 @@ export default {
     },
     props: {
         dataTarget: String,
-    },
-    created() {
-        const baseURL = 'http://localhost:3000/api/getUsers';
-        this.$http.get(baseURL).then(res => {
-            this.users = res.data;
-        });
-    },
-    mounted() {
-
+        users: Array,
     },
     methods: {
         createTicket() {

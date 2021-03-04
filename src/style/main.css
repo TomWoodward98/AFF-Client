@@ -23,6 +23,10 @@
 }
 
 /* Text */
+.resize-none {
+    resize: none;
+}
+
 .word-break-word {
     word-break: break-word;
 }
