@@ -92,6 +92,12 @@
                             >
                                 {{ loggingIn ? 'Logging In...' : 'Login' }}
                             </button>
+                            <p
+                                class="text-danger mt-3"
+                                v-if="approve_error"
+                            >
+                                <strong>{{ approve_error }}</strong>
+                            </p>
                         </div>
                     </div>
                 </form>
@@ -110,6 +116,7 @@ export default {
             email_error: false,
             password: '',
             password_error: false,
+            approve_error: false,
             server_error: false,
             loggingIn: false,
             errors: false,
@@ -121,6 +128,7 @@ export default {
             this.email_error = false;
             this.password_error = false;
             this.server_error = false;
+            this.approve_error = false;
             if (this.email.trim() === '') {
                 failed = true;
                 this.email_error = 'Please enter your email';
@@ -162,11 +170,15 @@ export default {
             if (error.Error[0].email) {
                 this.email_error = error.Error[0].email;
             }
-            if (error.Error[1].password) {
+            if (error.Error[1] && error.Error[1].password) {
                 this.password_error = error.Error[1].password;
             }
             if (error.Error[0].server) {
                 this.server_error = error.Error[0].server;
+            }
+            if (error.Error[0].approved) {
+                this.approve_error = error.Error[0].approved;
+                console.log('errro', this.approve_error);
             }
         },
     },

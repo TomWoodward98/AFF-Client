@@ -3,13 +3,13 @@
         <div class="modal-dialog d-flex align-items-center modal-dialog-centered" role="document">
             <div class="modal-content">
                 <form 
-                    id="createUserForm"
-                    action="/create-user"
+                    id="editUserForm"
+                    action="/update-user"
                     autocomplete="off"
                     method="post"
                 >
                     <div class="modal-header">
-                        <h5 class="modal-title" id="userModalLabel">Create User</h5>
+                        <h5 class="modal-title" id="userModalLabel">Edit User</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -17,7 +17,7 @@
                     <div class="modal-body">
                         <div class="form-group row mb-0">
                             <div class="col-12 text-left">
-                                <label for="title">Title</label>
+                                <label for="editTitle">Title</label>
                             </div>
                         </div>
                         <div class="form-group row">
@@ -26,25 +26,19 @@
                                     autocomplete="off"
                                     autofocus
                                     class="form-control"
-                                    :class="{ 'is-invalid' : title_error }"
-                                    id="title"
-                                    name="title"
+                                    id="editTitle"
+                                    name="editTitle"
                                     required
                                     type="text"
-                                    placeholder="Enter Title"
-                                    v-model="form.title"
+                                    :placeholder="user.title"
+                                    :value="user.title"
+                                    @change="changeTitle($event)"
                                 >
-                                <span
-                                    class="invalid-feedback"
-                                    role="alert"
-                                    v-if="title_error">
-                                    <strong>{{ title_error }}</strong>
-                                </span>
                             </div>
                         </div>
                         <div class="form-group row mb-0">
                             <div class="col-12 text-left">
-                                <label for="first_name">First Name</label>
+                                <label for="edit_first_name">First Name</label>
                             </div>
                         </div>
                         <div class="form-group row">
@@ -53,25 +47,19 @@
                                     autocomplete="off"
                                     autofocus
                                     class="form-control"
-                                    :class="{ 'is-invalid' : first_name_error }"
-                                    id="first_name"
-                                    name="first_name"
+                                    id="edit_first_name"
+                                    name="edit_first_name"
                                     required
                                     type="text"
-                                    placeholder="Enter First Name"
-                                    v-model="form.first_name"
+                                    :placeholder="user.first_name"
+                                    :value="user.first_name"
+                                    @change="changeFirst($event)"
                                 >
-                                <span
-                                    class="invalid-feedback"
-                                    role="alert"
-                                    v-if="first_name_error">
-                                    <strong>{{ first_name_error }}</strong>
-                                </span>
                             </div>
                         </div>
                         <div class="form-group row mb-0">
                             <div class="col-12 text-left">
-                                <label for="last_name">Last Name</label>
+                                <label for="edit_last_name">Last Name</label>
                             </div>
                         </div>
                         <div class="form-group row">
@@ -80,25 +68,19 @@
                                     autocomplete="off"
                                     autofocus
                                     class="form-control"
-                                    :class="{ 'is-invalid' : last_name_error }"
-                                    id="last_name"
-                                    name="last_name"
+                                    id="edit_last_name"
+                                    name="edit_last_name"
                                     required
                                     type="text"
-                                    placeholder="Enter Last Name"
-                                    v-model="form.last_name"
+                                    :placeholder="user.last_name"
+                                    :value="user.last_name"
+                                    @change="changeLast($event)"
                                 >
-                                <span
-                                    class="invalid-feedback"
-                                    role="alert"
-                                    v-if="last_name_error">
-                                    <strong>{{ last_name_error }}</strong>
-                                </span>
                             </div>
                         </div>
                         <div class="form-group row mb-0">
                             <div class="col-12 text-left">
-                                <label for="email">Email</label>
+                                <label for="edit_email">Email</label>
                             </div>
                         </div>
                         <div class="form-group row">
@@ -108,12 +90,13 @@
                                     autofocus
                                     class="form-control"
                                     :class="{ 'is-invalid' : email_error }"
-                                    id="email"
-                                    name="email"
+                                    id="edit_email"
+                                    name="edit_email"
                                     required
                                     type="text"
-                                    placeholder="Enter email"
-                                    v-model="form.email"
+                                    :placeholder="user.email"
+                                    :value="user.email"
+                                    @change="changeEmail($event)"
                                 >
                                 <span
                                     class="invalid-feedback"
@@ -125,7 +108,7 @@
                         </div>
                         <div class="form-group row mb-0">
                             <div class="col-12 text-left">
-                                <label for="password">Password</label>
+                                <label for="edit_password">Password</label>
                             </div>
                         </div>
                         <div class="form-group row">
@@ -135,11 +118,11 @@
                                     autofocus
                                     class="form-control"
                                     :class="{ 'is-invalid' : password_error }"
-                                    id="password"
-                                    name="password"
+                                    id="edit_password"
+                                    name="edit_password"
                                     required
                                     type="password"
-                                    placeholder="Enter Password"
+                                    placeholder="Enter a new Password to change"
                                     v-model="form.password"
                                 >
                                 <span
@@ -151,8 +134,8 @@
                             </div>
                         </div>
                         <div class="form-group row mb-0">
-                            <div class="col-12">
-                                <label for="password_confirmation">Confirm Password</label>
+                            <div class="col-12 text-left">
+                                <label for="edit_password_confirmation">Confirm Password</label>
                             </div>
                         </div>
                         <div class="form-group row">
@@ -160,11 +143,11 @@
                                 <input
                                     class="form-control"
                                     :class="{ 'is-invalid' : password_confirmation_error }"
-                                    id="password_confirmation"
-                                    name="password_confirmation"
+                                    id="edit_password_confirmation"
+                                    name="edit_password_confirmation"
                                     type="password"
                                     required
-                                    placeholder="Confirm Password"
+                                    placeholder="Confirm the new Password"
                                     v-model="password_confirmation"
                                 >
                                 <span
@@ -177,7 +160,7 @@
                         </div>
                         <div class="form-group row mb-0">
                             <div class="col-12 text-left">
-                                <label for="department">Department</label>
+                                <label for="edit_department">Department</label>
                             </div>
                         </div>
                         <div class="form-group row">
@@ -185,26 +168,18 @@
                                 <select
                                     autocomplete="off"
                                     class="form-control"
-                                    :class="{ 'is-invalid' : department_error }"
-                                    id="department"
-                                    name="department"
-                                    required
-                                    v-model="form.department"
+                                    id="edit_department"
+                                    name="edit_department"
+                                    @change="changeDepartment($event)"
                                 >
-                                    <option value=""></option>
-                                    <option v-for="department in departments" :key="department.id" :value="department">{{ department.name }}</option>
+                                    <option :value="user.department._id">{{ user.department.name }}</option>
+                                    <option v-for="department in departments" :key="department._id" :value="department._id">{{ department.name }}</option>
                                 </select>
-                                <span
-                                    class="invalid-feedback"
-                                    role="alert"
-                                    v-if="department_error">
-                                    <strong>{{ department_error }}</strong>
-                                </span>
                             </div>
                         </div>
                         <div class="form-group row mb-0">
                             <div class="col-12 text-left">
-                                <label for="user_type">User Permission Level</label>
+                                <label for="edit_user_type">User Permission Level</label>
                             </div>
                         </div>
                         <div class="form-group row">
@@ -212,27 +187,19 @@
                                 <select
                                     autocomplete="off"
                                     class="form-control"
-                                    :class="{ 'is-invalid' : user_type_error }"
-                                    id="user_type"
-                                    name="user_type"
-                                    required
-                                    v-model="form.user_type"
+                                    id="edit_user_type"
+                                    name="edit_user_type"
+                                    @change="UserType($event)"
                                 >
-                                    <option value=""></option>
-                                    <option v-for="user_type in user_types" :key="user_type.id" :value="user_type">{{ user_type.type }}</option>
+                                    <option :value="user.user_type._id">{{  user.user_type.type }}</option>
+                                    <option v-for="user_type in user_types" :key="user_type._id" :value="user_type._id">{{ user_type.type }}</option>
                                 </select>
-                                <span
-                                    class="invalid-feedback"
-                                    role="alert"
-                                    v-if="user_type_error">
-                                    <strong>{{ user_type_error }}</strong>
-                                </span>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
-                        <button id="createUserBtn" type="button" class="btn btn-secondary" @click.prevent="createUser()">Create User</button>
+                        <button id="editUserBtn" type="button" class="btn btn-secondary" @click.prevent="editUser()">Edit User</button>
                     </div>
                 </form>
             </div>
@@ -242,12 +209,13 @@
 
 <script>
 export default {
-    name: "CreateDepartment",
+    name: "EditUser",
     data() {
         return {
             departments: [],
             user_types: [],
             form : {
+                user: this.user,
                 title: '',
                 first_name: '',
                 last_name: '',
@@ -257,20 +225,16 @@ export default {
                 user_type: null,
                 approved: true,
             },
-            title_error: false,
-            first_name_error: false,
-            last_name_error: false,
             email_error: false,
             emailFormat: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+[.]+[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9-]+)*$/,
             password_error: false,
             password_confirmation: '',
             password_confirmation_error: false,
-            department_error: false,
-            user_type_error: false,
         };
     },
     props: {
         dataTarget: String,
+        user: Object,
     },
     created() {
         const baseURL = 'http://localhost:3000';
@@ -282,82 +246,91 @@ export default {
             this.user_types = res.data;
         });
     },
-    mounted() {
-
-    },
     methods: {
-        createUser() {
+        changeTitle(event) {
+            this.form.title = event.target.value;
+        },
+        changeFirst(event) {
+            this.form.first_name = event.target.value;
+        },
+        changeLast(event) {
+            this.form.last_name = event.target.value;
+        },
+        changeEmail(event) {
+            this.form.email = event.target.value;
+        },
+        changeDepartment(event) {
+            this.form.department = event.target.value;
+        },
+        changeUserType(event) {
+            this.form.user_type = event.target.value;
+        },
+        editUser() {
             let failed = false;
 
-            this.title_error = false;
-            this.first_name_error = false;
-            this.last_name_error = false;
             this.email_error = false;
             this.password_error = false;
             this.password_confirmation_error = false;
-            this.department_error = false;
-            this.user_type_error = false;
 
-             if (this.form.title.trim() === '') {
-                failed = true;
-                this.title_error = 'Please enter the users title'
+            if (this.form.title.trim() === '') {
+                this.form.title = this.user.title;
             }
 
             if (this.form.first_name.trim() === '') {
-                failed = true;
-                this.first_name_error = 'Please enter the users first name'
+                this.form.first_name = this.user.first_name;
             }
 
             if (this.form.last_name.trim() === '') {
-                failed = true;
-                this.last_name_error = 'Please enter the users last name'
+                this.form.last_name = this.user.last_name;
             }
 
             if (this.form.email.trim() === '') {
-                failed = true;
-                this.email_error = 'Please fill out your email';
-            } else if (this.isEmail() === false) {
-                failed = true;
-                this.email_error = 'Please enter a valid email address';
+                this.form.email = this.user.email;
             }
 
-            if (this.form.password.trim() === '') {
-                failed = true;
-                this.password_error = 'Please enter a valid password'
-            }
-
-            if (this.password_confirmation.trim() === '') {
-                failed = true;
-                this.password_confirmation_error = 'Please confirm your password'
-            }
-
-            if (this.form.password !== this.password_confirmation) {
+            if (this.form.password !== this.password_confirmation && this.form.password !== ''){
                 failed = true;
                 this.password_error = 'Your Passwords do not match'
                 this.password_confirmation_error = 'Your Passwords do not match'
             }
 
             if (this.form.department === null) {
-                failed = true;
-                this.department_error = 'Please enter the users department'
+                this.form.department = this.user.department;
+            } else {
+                console.log(this.form.department);
+                let departments = this.departments;
+                for (let i = 0; i < departments.length; i++) {
+                    if (departments[i]._id === this.form.department) {   
+                        this.form.department = departments[i];
+                    }
+                }
             }
 
             if (this.form.user_type === null) {
-                failed = true;
-                this.user_type_error = 'Please enter the users permission level'
+                this.form.user_type = this.user.user_type;
+            } else {
+                let userTypes = this.user_types;
+                for (let i = 0; i < userTypes.length; i++) {
+                    if (userTypes[i]._id === this.form.user_type) {   
+                        this.form.user_type = userTypes[i];
+                    }
+                }
             }
 
             if (failed) {
                 return false;
             }
 
-            this.creatingUser = true;
+            this.edittingUser = true;
 
-            this.$http.post('http://localhost:3000/api/register', this.form).then(response => {
+            console.log('form: ', this.form);
+
+            this.$http.post('http://localhost:3000/api/update-user', this.form).then(response => {
                 if (response.errors) {
                     this.creatingUser = false;
                     this.handleErrors(response.errors[0]);
                 } else {
+                    console.log('updated user: ', response.data);
                     this.form.title = '';
                     this.form.first_name = '';
                     this.form.last_name = '';
@@ -366,39 +339,14 @@ export default {
                     this.password_confirmation = '';
                     this.form.department = null;
                     this.form.user_type = null;
-                    this.$emit('userCreated', response.data);
+                    this.form.approved = false;
+                    this.$emit('userUpdated', response.data);
                     $('#' + this.dataTarget).modal('hide')
                 }
             });
         },
         isEmail() {
             return this.emailFormat.test(this.form.email);
-        },
-        handleErrors(sentError){
-            if (sentError.title) {
-                this.title_error = sentError.title;
-            }
-            if (sentError.first_name) {
-                this.first_name_error = sentError.first_name;
-            }
-            if (sentError.last_name) {
-                this.last_name_error = sentError.last_name;
-            }
-            if (sentError.email) {
-                this.email_error = sentError.email;
-            }
-            if (sentError.password) {
-                this.password_error = sentError.password;
-            }
-            if (sentError.password_confirmation) {
-                this.password_confirmation_error = sentError.password;
-            }
-            if (sentError.department) {
-                this.department_confirmation_error = sentError.department_confirmation;
-            }
-            if (sentError.user_type) {
-                this.user_type_error = sentError.user_type;
-            }
         },
     },
 

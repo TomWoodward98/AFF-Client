@@ -50,7 +50,7 @@
                 :ticket="selectedTicket"
                 :statuses="columns"
                 dataTarget="viewTicketModal"
-                @ticketEditted="editTicket($event)"
+                @ticketEdited="editTicket($event)"
             ></ticket-modal>
         </div>
     </div>
@@ -99,11 +99,10 @@ export default {
             this.tickets.push(ticket);
         },
         editTicket(ticket) {
-            let edittedTicket = this.tickets.find(x => x.id === ticket._id);
             let tickets = this.tickets
-            for (i = 0; i < tickets.length; i++) {
-                if (tickets[i] === edittedTicket) {
-                    tickets[i] = edittedTicket;
+            for (let i = 0; i < tickets.length; i++) {
+                if (tickets[i]._id === ticket._id) {
+                    this.tickets.splice(i, 1, ticket);
                 }
             }
         },

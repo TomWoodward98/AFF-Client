@@ -2,6 +2,12 @@
     <div class="modal fade" :id="dataTarget" tabindex="-1" role="dialog" aria-labelledby="ticketModalLabel" aria-hidden="true">
         <div class="modal-dialog d-flex align-items-center modal-dialog-centered" role="document">
             <div v-if="ticket" class="modal-content">
+                <form 
+                    id="editTicketForm"
+                    action="/edit-ticket"
+                    autocomplete="off"
+                    method="post"
+                >
                 <div class="modal-header">
                     <h5 v-if="!edit" class="modal-title" id="ModalLabel">{{ ticket.title }}</h5>
                     <input
@@ -42,15 +48,15 @@
                                 <p class="m-0"><strong>Ticket Status</strong></p>
                                 <p v-if="ticket.status && !edit">{{ ticket.status.name }}</p>
                                 <select
-                                    v-else
+                                    v-else-if="ticket.status && edit"
                                     autocomplete="off"
                                     class="form-control"
                                     id="editStatus"
                                     name="editStatus"
                                     @change="changeStatus($event)"
                                 >
-                                    <option :value="ticket.status.name">{{ ticket.status.name }}</option>
-                                    <option v-for="status in statuses" :key="status.id" :value="status.name">{{ status.name }}</option>
+                                    <option :value="ticket.status">{{ ticket.status.name }}</option>
+                                    <option v-for="status in statuses" :key="status._id" :value="status._id">{{ status.name }}</option>
                                 </select>
                                 <p class="m-0"><strong>Created at</strong></p>
                                 <p>{{ ticket.created_at }}</p>
@@ -59,17 +65,17 @@
                         <div class="col-6">
                             <div class="col-12">
                                 <p class="m-0"><strong>Assigned to</strong></p>
-                                <p v-if="!edit">{{ ticket.allocated_to ? ticket.allocated_to.email : 'Assign a team member' }}</p>
+                                <p v-if="ticket.allocated_to && !edit">{{ ticket.allocated_to ? ticket.allocated_to.email : 'Assign a team member' }}</p>
                                 <select
-                                    v-else
+                                    v-else-if="ticket.allocated_to && edit"
                                     autocomplete="off"
                                     class="form-control"
                                     id="editAssigned"
                                     name="editAssigned"
                                     @change="changeAllocated($event)"
                                 >
-                                    <option :value="ticket.allocated_to.email">{{ ticket.allocated_to.email }}</option>
-                                    <option v-for="user in users" :key="user.id" :value="user.email">{{ user.email }}</option>
+                                    <option :value="ticket.allocated_to">{{ ticket.allocated_to.email }}</option>
+                                    <option v-for="user in users" :key="user._id" :value="user._id">{{ user.email }}</option>
                                 </select>
                                 <p class="m-0"><strong>Created By</strong></p>
                                 <p>{{ ticket.created_by ? ticket.created_by.email : '' }}</p>
@@ -81,15 +87,16 @@
                 </div>
                 <div class="modal-footer">
                     <button 
-                    @click="edit = !edit" 
+                    @click.prevent="edit = !edit" 
                     :class="edit ? 'btn btn-outline-info' : 'btn btn-info'"
                     >{{ edit ? 'Cancel' : 'Edit' }}</button>
                     <button 
                         class="btn btn-primary" 
                         v-if="edit" 
-                        @click="editTicket()"
+                        @click.prevent="editTicket()"
                     >Edit Ticket</button>
                 </div>
+                </form>
             </div>
         </div>
     </div>
@@ -103,12 +110,13 @@ export default {
         return {
             edit: false,
             form: {
+                id: null,
                 title: '',
                 info: '',
                 status: null,
                 allocatedTo: null,
             },
-        };
+        }
     },
     props: {
         dataTarget: String,
@@ -132,6 +140,8 @@ export default {
         editTicket() {
             let failed = false;
 
+            this.form.ticket = this.ticket;
+
             if (this.form.title.trim() === '') {
                 this.form.title = this.ticket.title;
             }
@@ -142,10 +152,24 @@ export default {
             
             if (this.form.status === null) {
                 this.form.status = this.ticket.status;
+            } else {
+                let statuses = this.statuses
+                for (let i = 0; i < statuses.length; i++) {
+                    if (statuses[i]._id === this.form.status) {   
+                        this.form.status = statuses[i];
+                    }
+                }
             }
 
             if (this.form.allocatedTo === null) {
-                this.form.allocatedTo = this.ticket.allocatedTo;
+                this.form.allocatedTo = this.ticket.allocated_to;
+            } else {
+                let users = this.users
+                for (let i = 0; i < users.length; i++) {
+                    if (users[i]._id === this.form.allocatedTo) {   
+                        this.form.allocatedTo = users[i];
+                    }
+                }
             }
 
             if (failed) {
@@ -154,17 +178,18 @@ export default {
 
             this.edittingTicket = true;
 
-            this.$http.post('http://localhost:3000/ticket/create-ticket', this.form).then(response => {
+            this.$http.post('http://localhost:3000/ticket/update-ticket', this.form).then(response => {
                 if (this.errors) {
                     this.edittingTicket = false;
                     this.handleErrors(this.errors);
                 } else {
+                    this.form.ticket = null
                     this.form.title = '';
                     this.form.info = '';
                     this.form.status = null;
                     this.form.allocatedTo = null;
-                    this.$emit('ticketEditted', response.data);
-                    // Event emit where we get the created ticket 
+                    this.edit = false;
+                    this.$emit('ticketEdited', response.data);
                     $('#' + this.dataTarget).modal('hide')
                 }
             });
