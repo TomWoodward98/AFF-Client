@@ -69,13 +69,12 @@
                                 </span>
                             </div>
                         </div>
-                        <!-- TODO - Can only do this if support worker or admin -->
-                        <div class="form-group row mb-0">
+                        <div v-if="currentUser.isAdmin || currentUser.isSupport" class="form-group row mb-0">
                             <div class="col-12 text-left">
                                 <label for="title">Allocate Ticket</label>
                             </div>
                         </div>
-                        <div class="form-group row">
+                        <div v-if="currentUser.isAdmin || currentUser.isSupport" class="form-group row">
                             <div class="col-12">
                                 <select
                                     autocomplete="off"
@@ -90,12 +89,12 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="form-group row mb-0">
+                        <div v-if="currentUser.isAdmin || currentUser.isSupport" class="form-group row mb-0">
                             <div class="col-12 text-left">
                                 <label for="title">Raised by</label>
                             </div>
                         </div>
-                        <div class="form-group row">
+                        <div v-if="currentUser.isAdmin || currentUser.isSupport" class="form-group row">
                             <div class="col-12">
                                 <select
                                     autocomplete="off"
@@ -145,6 +144,7 @@ export default {
         };
     },
     props: {
+        currentUser: Object,
         dataTarget: String,
         users: Array,
     },
@@ -167,9 +167,11 @@ export default {
                 this.info_error = 'Please give a description of the ticket'
             }
 
-            if (this.form.raisedBy === null) {
+            if (this.form.raisedBy === null && (this.currentUser.isAdmin || this.currentUser.isSupport)) {
                 failed = true;
                 this.raisedBy_error = 'Please select who raised the ticket'
+            } else if (this.currentUser.isClient) {
+                this.form.raisedBy = this.currentUser;
             }
 
             if (failed) {

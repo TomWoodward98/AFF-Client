@@ -8,95 +8,135 @@
                     autocomplete="off"
                     method="post"
                 >
-                <div class="modal-header">
-                    <h5 v-if="!edit" class="modal-title" id="ModalLabel">{{ ticket.title }}</h5>
-                    <input
-                        v-else
-                        autocomplete="off"
-                        class="form-control"
-                        id="editTitle"
-                        name="editTitle"
-                        required
-                        type="text"
-                        :placeholder="ticket.title"
-                        :value="ticket.title"
-                        @change="changeTitle($event)"
-                    >
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body text-left">
-                    <div class="row word-break-word">
-                        <div class="col-6">
-                            <div class="col-12">
-                                <p class="m-0"><strong>Description</strong></p>
-                                <p v-if="ticket.info && !edit">{{ ticket.info }}</p>
-                                <textarea
-                                    v-else
-                                    autocomplete="off"
-                                    class="form-control resize-none"
-                                    id="editInfo"
-                                    name="editInfo"
-                                    required
-                                    type="text"
-                                    :placeholder="ticket.info"
-                                    :value="ticket.info"
-                                    @change="changeInfo($event)"
-                                >
-                                </textarea>
-                                <p class="m-0"><strong>Ticket Status</strong></p>
-                                <p v-if="ticket.status && !edit">{{ ticket.status.name }}</p>
-                                <select
-                                    v-else-if="ticket.status && edit"
-                                    autocomplete="off"
-                                    class="form-control"
-                                    id="editStatus"
-                                    name="editStatus"
-                                    @change="changeStatus($event)"
-                                >
-                                    <option :value="ticket.status">{{ ticket.status.name }}</option>
-                                    <option v-for="status in statuses" :key="status._id" :value="status._id">{{ status.name }}</option>
-                                </select>
-                                <p class="m-0"><strong>Created at</strong></p>
-                                <p>{{ ticket.created_at }}</p>
+                    <div class="modal-header">
+                        <h5 v-if="!edit" class="modal-title" id="ModalLabel">{{ ticket.title }}</h5>
+                        <input
+                            v-else
+                            autocomplete="off"
+                            class="form-control"
+                            id="editTitle"
+                            name="editTitle"
+                            required
+                            type="text"
+                            :placeholder="ticket.title"
+                            :value="ticket.title"
+                            @change="changeTitle($event)"
+                        >
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body text-left">
+                        <div class="row word-break-word">
+                            <div class="col-6">
+                                <div class="col-12">
+                                    <p class="m-0"><strong>Description</strong></p>
+                                    <p v-if="(ticket.info && !edit) && !clientAddInfo">{{ ticket.info }}</p>
+                                    <textarea
+                                        v-if="clientAddInfo || edit"
+                                        autocomplete="off"
+                                        class="form-control resize-none"
+                                        id="editInfo"
+                                        name="editInfo"
+                                        required
+                                        type="text"
+                                        :placeholder="ticket.info"
+                                        :value="ticket.info"
+                                        @change="changeInfo($event)"
+                                    >
+                                    </textarea>
+                                    <p class="m-0"><strong>Ticket Status</strong></p>
+                                    <p v-if="ticket.status && !edit">{{ ticket.status.name }}</p>
+                                    <select
+                                        v-else-if="ticket.status && edit"
+                                        autocomplete="off"
+                                        class="form-control"
+                                        id="editStatus"
+                                        name="editStatus"
+                                        @change="changeStatus($event)"
+                                    >
+                                        <option :value="ticket.status">{{ ticket.status.name }}</option>
+                                        <option v-for="status in statuses" :key="status._id" :value="status._id">{{ status.name }}</option>
+                                    </select>
+                                    <p class="m-0"><strong>Created at</strong></p>
+                                    <p>{{ ticket.created_at }}</p>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="col-12">
-                                <p class="m-0"><strong>Assigned to</strong></p>
-                                <p v-if="ticket.allocated_to && !edit">{{ ticket.allocated_to ? ticket.allocated_to.email : 'Assign a team member' }}</p>
-                                <select
-                                    v-else-if="ticket.allocated_to && edit"
-                                    autocomplete="off"
-                                    class="form-control"
-                                    id="editAssigned"
-                                    name="editAssigned"
-                                    @change="changeAllocated($event)"
-                                >
-                                    <option :value="ticket.allocated_to">{{ ticket.allocated_to.email }}</option>
-                                    <option v-for="user in users" :key="user._id" :value="user._id">{{ user.email }}</option>
-                                </select>
-                                <p class="m-0"><strong>Created By</strong></p>
-                                <p>{{ ticket.created_by ? ticket.created_by.email : '' }}</p>
-                                <p class="m-0"><strong>Raised By</strong></p>
-                                <p>{{ ticket.raised_by ? ticket.raised_by.email : '' }}</p>
+                            <div class="col-6">
+                                <div class="col-12">
+                                    <p class="m-0"><strong>Assigned to</strong></p>
+                                    <p v-if="ticket.allocated_to && !edit">{{ ticket.allocated_to ? ticket.allocated_to.email : 'Assign a team member' }}</p>
+                                    <select
+                                        v-else-if="ticket.allocated_to && edit"
+                                        autocomplete="off"
+                                        class="form-control"
+                                        id="editAssigned"
+                                        name="editAssigned"
+                                        @change="changeAllocated($event)"
+                                    >
+                                        <option :value="ticket.allocated_to">{{ ticket.allocated_to.email }}</option>
+                                        <option v-for="user in users" :key="user._id" :value="user._id">{{ user.email }}</option>
+                                    </select>
+                                    <p class="m-0"><strong>Created By</strong></p>
+                                    <p>{{ ticket.created_by ? ticket.created_by.email : '' }}</p>
+                                    <p class="m-0"><strong>Raised By</strong></p>
+                                    <p>{{ ticket.raised_by ? ticket.raised_by.email : '' }}</p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                </form>
                 <div class="modal-footer">
-                    <button 
-                    @click.prevent="edit = !edit" 
-                    :class="edit ? 'btn btn-outline-info' : 'btn btn-info'"
-                    >{{ edit ? 'Cancel' : 'Edit' }}</button>
+                    <button
+                        v-if="!currentUser.isClient"
+                        @click.prevent="edit = !edit" 
+                        :class="edit ? 'btn btn-outline-info' : 'btn btn-info'"
+                    >
+                        {{ edit ? 'Cancel' : 'Edit' }}
+                    </button>
                     <button 
                         class="btn btn-primary" 
                         v-if="edit" 
                         @click.prevent="editTicket()"
-                    >Edit Ticket</button>
+                    >
+                        Edit Ticket
+                    </button>
+                    <button
+                        v-if="currentUser.isClient && isUsersTicket && ticket.status.name === 'Solved'"
+                        class="btn btn-outline-info" 
+                        @click.prevent="clientEdit('reopen')"
+                    >
+                        Reopen
+                    </button>
+                    <button
+                        v-if="currentUser.isClient && isUsersTicket && ticket.status.name === 'Solved'"
+                        class="btn btn-info" 
+                        @click.prevent="clientEdit('close')"
+                    >
+                        Confirm and close
+                    </button>
+                    <button
+                        v-if="currentUser.isClient && isUsersTicket && ticket.status.name === 'Suspended'"
+                        class="btn btn-info" 
+                        @click="clientAddInfo = !clientAddInfo"
+                    >
+                       {{ clientAddInfo ? 'Cancel' : 'Add more Information' }} 
+                    </button>
+                    <button
+                        v-if="clientAddInfo"
+                        class="btn btn-info" 
+                        @click="editTicket()"
+                    >
+                       Confirm Edit 
+                    </button>
+                    <button
+                        v-if="(currentUser.isClient && isUsersTicket) && (ticket.status.name === 'Suspended' || ticket.allocated_to === null)"
+                        class="btn btn-info" 
+                        @click.prevent="clientEdit('cancel')"
+                    >
+                        Cancel Ticket
+                    </button>
                 </div>
-                </form>
             </div>
         </div>
     </div>
@@ -116,13 +156,22 @@ export default {
                 status: null,
                 allocatedTo: null,
             },
+            clientAddInfo: false,
         }
     },
     props: {
+        currentUser: Object,
         dataTarget: String,
         ticket: Object,
         statuses: Array,
         users: Array,
+    },
+    computed: {
+        isUsersTicket() {
+            if (this.ticket.raised_by && this.currentUser) {
+                return this.ticket.raised_by._id === this.currentUser._id;
+            }
+        }
     },
     methods: {
         changeTitle(event) {
@@ -136,6 +185,26 @@ export default {
         },
         changeAllocated(event) {
             this.form.allocatedTo = event.target.value
+        },
+        clientEdit(editedStatus) {
+            for (let i = 0; i < this.statuses.length; i++) {
+                if (this.statuses[i].name === 'Open' && editedStatus === 'reopen') {
+                    this.form.status = this.statuses[i]._id;
+                    this.editTicket();
+                    break;
+                } else if (this.statuses[i].name === 'Closed' && editedStatus === 'close') {
+                    this.form.status = this.statuses[i]._id;
+                    this.editTicket();
+                    break;
+                } else if (this.statuses[i].name === 'Cancelled' && editedStatus === 'cancel') {
+                    this.form.status = this.statuses[i]._id;
+                    this.editTicket();
+                    break;
+                }
+            }
+        },
+        addInfoToTicket() {
+            this.clientAddInfo = true;
         },
         editTicket() {
             let failed = false;

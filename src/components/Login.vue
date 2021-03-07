@@ -92,12 +92,12 @@
                             >
                                 {{ loggingIn ? 'Logging In...' : 'Login' }}
                             </button>
-                            <p
-                                class="text-danger mt-3"
-                                v-if="approve_error"
-                            >
+                            <div v-if="approve_error" class="alert alert-danger alert-dismissible fade show col-12 mt-3" role="alert">
                                 <strong>{{ approve_error }}</strong>
-                            </p>
+                                <button type="button" @click="approve_error = false" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -178,7 +178,6 @@ export default {
             }
             if (error.Error[0].approved) {
                 this.approve_error = error.Error[0].approved;
-                console.log('errro', this.approve_error);
             }
         },
     },

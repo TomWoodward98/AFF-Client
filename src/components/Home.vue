@@ -9,7 +9,7 @@
             <div class="col-3 text-left">
                 <div class="dropdown">
                     <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Create
+                        Add
                     </button>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                         <button 
@@ -18,6 +18,7 @@
                             data-toggle="modal"
                         >Add Ticket</button>
                         <button 
+                            v-if="currentUser.isAdmin"
                             class="dropdown-item"
                             data-target="#createColumnModal"
                             data-toggle="modal"
@@ -25,6 +26,7 @@
                     </div>
                 </div>
                 <create-ticket
+                    :currentUser="currentUser"
                     :users="users"
                     dataTarget="createTicketModal"
                     @ticketCreated="addTicket($event)"
@@ -34,18 +36,33 @@
                     @columnCreated="addColumn($event)"
                 ></create-column>
             </div>
-            <ticket-filters></ticket-filters>
+            <ticket-filters
+                :currentUser="currentUser"
+                @filterUsersTickets="getUserTickets($event)"
+                @removeUserTicketFilter="removeUserFilter()"
+            ></ticket-filters>
+        </div>
+        <div v-if="suspended.suspendedTicketAlert" class="row mt-3 mx-0">
+            <div class="col-12 alert alert-danger alert-dismissible fade show" role="alert">
+                <strong>Alert!</strong> You have some suspended tickets that need attention
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
         </div>
         <div v-if="columns.length > 0" class="row mx-auto overflow-x-scroll flex-nowrap max-w-100 h-100">
             <ticket-columns 
                 v-for="column in columns" 
+                :currentUser="currentUser"
                 :key="column.id"
                 :tickets="tickets"
                 :column="column"
                 @selectedTicket="loadModal($event)"
+                @userHasTicketSuspended="alertUserSus($event)"
             ></ticket-columns>
             <ticket-modal
                 v-if="selectedTicket"
+                :currentUser="currentUser"
                 :users="users"
                 :ticket="selectedTicket"
                 :statuses="columns"
@@ -78,6 +95,11 @@ export default {
             tickets: [],
             columns: [],
             selectedTicket: {},
+            currentUser: {},
+            suspended: {
+                suspendedTicketAlert: false,
+                suspendedTicket: {},
+            },
         };
     },
     created() {
@@ -85,11 +107,15 @@ export default {
         this.$http.get(baseURL).then(res => {
             this.users = res.data;
         });
-    },
-    mounted() {
+        const userURL = 'http://localhost:3000/api/get-current-user';
+        this.$http.get(userURL).then(res => {
+            this.currentUser = res.data;
+        });
         this.$http.get('http://localhost:3000/ticket/get-tickets').then(response => {
             this.tickets = response.data;
         });
+    },
+    mounted() {
         this.$http.get('http://localhost:3000/ticket/get-columns').then(response => {
             this.columns = response.data;
         });
@@ -111,7 +137,20 @@ export default {
         },
         loadModal(ticket) {
             this.selectedTicket = ticket;
-        }
+        },
+        getUserTickets(user) {
+            let filteredTickets = this.tickets.filter(ticket => ticket.raised_by._id === user);
+            this.tickets = filteredTickets;
+        },
+        removeUserFilter() {
+            this.$http.get('http://localhost:3000/ticket/get-tickets').then(response => {
+                this.tickets = response.data;
+            });
+        },
+        alertUserSus(ticket) {
+            this.suspended.suspendedTicketAlert = true;
+            this.suspended.suspendedTicket = ticket;
+        },
     },
 };
 </script>

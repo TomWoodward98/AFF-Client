@@ -14,7 +14,9 @@
             >
                 <div class="row">
                     <div class="col-12 cursor-pointer">
-                        <div class="col-12 p-3 bg-grey">
+                        <div 
+                            class="col-12 p-3 bg-grey" 
+                            :class="{'border border-danger drop-shadow' : ticketSuspended(ticket)}">
                             <p>{{ ticket.title }}</p>
                         </div>
                     </div>
@@ -38,6 +40,7 @@ export default {
         };
     },
     props: {
+        currentUser: {},
         tickets: Array,
         column: {},
     },
@@ -52,7 +55,12 @@ export default {
     methods: {
         loadViewTicketModal(ticket) {
             this.$emit('selectedTicket', ticket);
-            // this.selectedTicket = ticket
+        },
+        ticketSuspended(ticket) {
+            if ((ticket.raised_by._id === this.currentUser._id) && ticket.status.name === 'Suspended') {
+                this.$emit('userHasTicketSuspended', ticket);
+            }
+            return ticket.status.name === 'Suspended';
         },
     },
 }
