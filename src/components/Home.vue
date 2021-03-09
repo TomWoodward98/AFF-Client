@@ -6,25 +6,10 @@
             </div>
         </div>
         <div class="row my-3">
-            <div class="col-3 text-left">
-                <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Add
-                    </button>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <button 
-                            class="dropdown-item" 
-                            data-target="#createTicketModal"
-                            data-toggle="modal"
-                        >Add Ticket</button>
-                        <button 
-                            v-if="currentUser.isAdmin"
-                            class="dropdown-item"
-                            data-target="#createColumnModal"
-                            data-toggle="modal"
-                        >Add Column</button>
-                    </div>
-                </div>
+            <div class="col-2 text-left">
+                <dropdown-buttons
+                    :currentUser="currentUser"
+                ></dropdown-buttons>
                 <create-ticket
                     :currentUser="currentUser"
                     :users="users"
@@ -36,19 +21,21 @@
                     @columnCreated="addColumn($event)"
                 ></create-column>
             </div>
-            <ticket-filters
-                :currentUser="currentUser"
-                @filterUsersTickets="getUserTickets($event)"
-                @removeUserTicketFilter="removeUserFilter()"
-            ></ticket-filters>
+            <div class="col-8" v-if="!currentUser.isClient">
+                <ticket-filters
+                    :currentUser="currentUser"
+                    @filterAllocatedTickets="getAllocatedTickets($event)"
+                    @removeUserTicketFilter="removeUserFilter()"
+                ></ticket-filters>
+            </div>
+            <div class="col-2 text-right ml-auto">
+                <logout
+                    :currentUser="currentUser"
+                ></logout>
+            </div>
         </div>
         <div v-if="suspended.suspendedTicketAlert" class="row mt-3 mx-0">
-            <div class="col-12 alert alert-danger alert-dismissible fade show" role="alert">
-                <strong>Alert!</strong> You have some suspended tickets that need attention
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
+            <alert-component></alert-component>
         </div>
         <div v-if="columns.length > 0" class="row mx-auto overflow-x-scroll flex-nowrap max-w-100 h-100">
             <ticket-columns 
@@ -74,8 +61,11 @@
 </template>
 
 <script>
+import AlertComponent from "./extra/AlertComponent";
 import CreateTicket from "./tickets/CreateTicket";
 import CreateColumn from "./tickets/CreateColumn";
+import DropdownButtons from "./extra/DropdownButtons";
+import Logout from "./extra/Logout";
 import TicketFilters from "./tickets/TicketFilters";
 import TicketColumns from "./tickets/TicketColumns";
 import TicketModal from "./tickets/TicketModal";
@@ -83,8 +73,11 @@ import TicketModal from "./tickets/TicketModal";
 export default {
     name: 'Home',
     components: {
+        AlertComponent,
         CreateTicket,
         CreateColumn,
+        DropdownButtons,
+        Logout,
         TicketFilters,
         TicketColumns,
         TicketModal,
@@ -95,27 +88,25 @@ export default {
             tickets: [],
             columns: [],
             selectedTicket: {},
-            currentUser: {},
             suspended: {
                 suspendedTicketAlert: false,
                 suspendedTicket: {},
             },
         };
     },
+    computed: {
+        currentUser() {
+            return this.$store.state.user;
+        }
+    },
     created() {
-        const baseURL = 'http://localhost:3000/api/getUsers';
+        const baseURL = 'http://localhost:3000/api/get-users';
         this.$http.get(baseURL).then(res => {
             this.users = res.data;
-        });
-        const userURL = 'http://localhost:3000/api/get-current-user';
-        this.$http.get(userURL).then(res => {
-            this.currentUser = res.data;
         });
         this.$http.get('http://localhost:3000/ticket/get-tickets').then(response => {
             this.tickets = response.data;
         });
-    },
-    mounted() {
         this.$http.get('http://localhost:3000/ticket/get-columns').then(response => {
             this.columns = response.data;
         });
@@ -136,10 +127,10 @@ export default {
             this.columns.push(column);
         },
         loadModal(ticket) {
-            this.selectedTicket = ticket;
+            this.selectedTicket = ticket
         },
-        getUserTickets(user) {
-            let filteredTickets = this.tickets.filter(ticket => ticket.raised_by._id === user);
+        getAllocatedTickets(user) {
+            let filteredTickets = this.tickets.filter(ticket => ticket.allocated_to._id === user);
             this.tickets = filteredTickets;
         },
         removeUserFilter() {

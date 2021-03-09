@@ -1,7 +1,7 @@
 <template>
     <div id="app" class="m-0">
-        <navigation></navigation>
-        <div class="container">
+        <navigation v-if="currentUser && currentUser.isAdmin"></navigation>
+        <div class="container mt-3">
             <div class="row">
                 <router-view></router-view>
             </div>
@@ -20,6 +20,11 @@ export default {
     data() {
         return {
             
+        };
+    },
+    computed: {
+        currentUser() {
+            return this.$store.state.user;
         }
     },
 };

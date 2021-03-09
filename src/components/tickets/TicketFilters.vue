@@ -1,16 +1,8 @@
 <template>
-    <div class="col-9">
-        <div class="row text-right">
-            <div class="col-4">
-                <button v-if="!ticketsFiltered" @click="filterTickets()" class="btn btn-primary">My Tickets</button>
-                <button v-if="ticketsFiltered" @click="removeFilter()" class="btn btn-primary">All Tickets</button>
-            </div>
-            <div class="col-4">
-                <button class="btn btn-warning">Filter 2</button>
-            </div>
-            <div class="col-4">
-                <button class="btn btn-danger">Filter 3</button>
-            </div>
+    <div class="row text-right">
+        <div class="col-12">
+            <button v-if="!ticketsAllocatedFiltered" @click="filterAllocatedTickets()" class="btn btn-info">Allocated to me</button>
+            <button v-if="ticketsAllocatedFiltered" @click="removeFilter()" class="btn btn-info">All tickets</button>
         </div>
     </div>
 </template>
@@ -20,7 +12,7 @@ export default {
     name: "TicketFilters",
     data() {
         return {
-            ticketsFiltered: false,
+            ticketsAllocatedFiltered: false,
         };
     },
     props: {
@@ -30,13 +22,13 @@ export default {
 
     },
     methods: {
-        filterTickets() {
-            this.$emit('filterUsersTickets', this.currentUser._id);
-            this.ticketsFiltered = true;
+        filterAllocatedTickets() {
+            this.$emit('filterAllocatedTickets', this.currentUser._id);
+            this.ticketsAllocatedFiltered = true;
         },
         removeFilter() {
             this.$emit('removeUserTicketFilter', this.currentUser._id);
-            this.ticketsFiltered = false;
+            this.ticketsAllocatedFiltered = false;
         },
     },
 

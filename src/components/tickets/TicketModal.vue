@@ -67,15 +67,16 @@
                                     <p class="m-0"><strong>Assigned to</strong></p>
                                     <p v-if="ticket.allocated_to && !edit">{{ ticket.allocated_to ? ticket.allocated_to.email : 'Assign a team member' }}</p>
                                     <select
-                                        v-else-if="ticket.allocated_to && edit"
+                                        v-else-if="edit"
                                         autocomplete="off"
                                         class="form-control"
                                         id="editAssigned"
                                         name="editAssigned"
                                         @change="changeAllocated($event)"
                                     >
-                                        <option :value="ticket.allocated_to">{{ ticket.allocated_to.email }}</option>
-                                        <option v-for="user in users" :key="user._id" :value="user._id">{{ user.email }}</option>
+                                        <option v-if="ticket.allocated_to" :value="ticket.allocated_to">{{ ticket.allocated_to.email }}</option>
+                                        <option v-else value="null"></option>
+                                        <option v-for="user in supportUsers" :key="user._id" :value="user._id">{{ user.email }}</option>
                                     </select>
                                     <p class="m-0"><strong>Created By</strong></p>
                                     <p>{{ ticket.created_by ? ticket.created_by.email : '' }}</p>
@@ -130,7 +131,7 @@
                        Confirm Edit 
                     </button>
                     <button
-                        v-if="(currentUser.isClient && isUsersTicket) && (ticket.status.name === 'Suspended' || ticket.allocated_to === null)"
+                        v-if="(isUsersTicket) && (isTicketSuspendedOrNotAllocated) && (!isTicketCancelled)"
                         class="btn btn-info" 
                         @click.prevent="clientEdit('cancel')"
                     >
@@ -171,7 +172,16 @@ export default {
             if (this.ticket.raised_by && this.currentUser) {
                 return this.ticket.raised_by._id === this.currentUser._id;
             }
-        }
+        },
+        isTicketSuspendedOrNotAllocated() {
+            return this.ticket.status.name === 'Suspended' || this.ticket.allocated_to === null;
+        },
+        isTicketCancelled() {
+            return this.ticket.status.name === 'Cancelled';
+        },
+        supportUsers() {
+            return this.users.filter(user => user.user_type.type === 'support');
+        },
     },
     methods: {
         changeTitle(event) {
@@ -258,6 +268,7 @@ export default {
                     this.form.status = null;
                     this.form.allocatedTo = null;
                     this.edit = false;
+                    this.clientAddInfo = false;
                     this.$emit('ticketEdited', response.data);
                     $('#' + this.dataTarget).modal('hide')
                 }

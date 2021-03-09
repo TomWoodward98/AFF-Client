@@ -297,7 +297,6 @@ export default {
             if (this.form.department === null) {
                 this.form.department = this.user.department;
             } else {
-                console.log(this.form.department);
                 let departments = this.departments;
                 for (let i = 0; i < departments.length; i++) {
                     if (departments[i]._id === this.form.department) {   
@@ -323,14 +322,11 @@ export default {
 
             this.edittingUser = true;
 
-            console.log('form: ', this.form);
-
             this.$http.post('http://localhost:3000/api/update-user', this.form).then(response => {
                 if (response.errors) {
                     this.creatingUser = false;
                     this.handleErrors(response.errors[0]);
                 } else {
-                    console.log('updated user: ', response.data);
                     this.form.title = '';
                     this.form.first_name = '';
                     this.form.last_name = '';

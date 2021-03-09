@@ -85,7 +85,7 @@
                                     v-model="form.allocatedTo"
                                 >
                                     <option value=""></option>
-                                    <option v-for="user in users" :key="user.id" :value="user">{{ user.email }}</option>
+                                    <option v-for="user in supportUsers" :key="user.id" :value="user">{{ user.email }}</option>
                                 </select>
                             </div>
                         </div>
@@ -147,6 +147,11 @@ export default {
         currentUser: Object,
         dataTarget: String,
         users: Array,
+    },
+    computed: {
+        supportUsers() {
+            return this.users.filter(user => user.user_type.type === 'support');
+        },
     },
     methods: {
         createTicket() {

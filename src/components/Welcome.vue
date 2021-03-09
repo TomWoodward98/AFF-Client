@@ -20,9 +20,6 @@
 
 export default {
   name: 'Register',
-  components: {
-
-  },
   data() {
     return {
       name: '',

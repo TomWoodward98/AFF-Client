@@ -129,6 +129,7 @@ export default {
             this.password_error = false;
             this.server_error = false;
             this.approve_error = false;
+            
             if (this.email.trim() === '') {
                 failed = true;
                 this.email_error = 'Please enter your email';
@@ -160,6 +161,7 @@ export default {
                     } else if (response.data.Success) {
                         this.errors = false;
                         this.confirmation = true;
+                        this.loadCurrentUser();
                         this.$router.push('home');
                     }
                 }
@@ -167,18 +169,23 @@ export default {
             return true;
         },
         handleErrors(error) {
-            if (error.Error[0].email) {
-                this.email_error = error.Error[0].email;
+            if (error.Error.email) {
+                this.email_error = error.Error.email;
             }
-            if (error.Error[1] && error.Error[1].password) {
-                this.password_error = error.Error[1].password;
+            if (error.Error.password) {
+                this.password_error = error.Error.password;
             }
-            if (error.Error[0].server) {
-                this.server_error = error.Error[0].server;
+            if (error.Error.server) {
+                this.server_error = error.Error.server;
             }
-            if (error.Error[0].approved) {
-                this.approve_error = error.Error[0].approved;
+            if (error.Error.approved) {
+                this.approve_error = error.Error.approved;
             }
+        },
+        loadCurrentUser() {
+            this.$http.get('http://localhost:3000/api/get-current-user').then((res) => {
+                this.$store.commit('setCurrentUser', res.data);
+            });
         },
     },
 };
