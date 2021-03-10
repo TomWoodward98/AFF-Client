@@ -232,7 +232,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
-                        <button id="createUserBtn" type="button" class="btn btn-secondary" @click.prevent="createUser()">Create User</button>
+                        <button id="createUserBtn" type="button" class="btn btn-secondary" @click.prevent="createUser()">{{ this.creatingUser ? 'Creating User' : 'Create User' }}</button>
                     </div>
                 </form>
             </div>
@@ -267,6 +267,7 @@ export default {
             password_confirmation_error: false,
             department_error: false,
             user_type_error: false,
+            creatingUser: false,
         };
     },
     props: {
@@ -282,9 +283,6 @@ export default {
             this.user_types = res.data;
         });
     },
-    mounted() {
-
-    },
     methods: {
         createUser() {
             let failed = false;
@@ -298,7 +296,7 @@ export default {
             this.department_error = false;
             this.user_type_error = false;
 
-             if (this.form.title.trim() === '') {
+            if (this.form.title.trim() === '') {
                 failed = true;
                 this.title_error = 'Please enter the users title'
             }
@@ -354,10 +352,11 @@ export default {
             this.creatingUser = true;
 
             this.$http.post('http://localhost:3000/api/register', this.form).then(response => {
-                if (response.errors) {
+                if (response.data.Error) {
                     this.creatingUser = false;
-                    this.handleErrors(response.errors[0]);
+                    this.handleErrors(response.data.Error);
                 } else {
+                    this.creatingUser = false;
                     this.form.title = '';
                     this.form.first_name = '';
                     this.form.last_name = '';
@@ -390,11 +389,11 @@ export default {
             if (sentError.password) {
                 this.password_error = sentError.password;
             }
-            if (sentError.password_confirmation) {
+            if (sentError.password) {
                 this.password_confirmation_error = sentError.password;
             }
             if (sentError.department) {
-                this.department_confirmation_error = sentError.department_confirmation;
+                this.department_error = sentError.department;
             }
             if (sentError.user_type) {
                 this.user_type_error = sentError.user_type;

@@ -118,7 +118,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
-                        <button id="createTicketBtn" type="button" class="btn btn-secondary" @click.prevent="createTicket()">Create Ticket</button>
+                        <button id="createTicketBtn" type="button" class="btn btn-secondary" @click.prevent="createTicket()">{{ creatingTicket ? 'Creating Ticket' : 'Create Ticket' }}</button>
                     </div>
                 </form>
             </div>
@@ -141,6 +141,7 @@ export default {
             info_error: false,
             allocated_error: false,
             raisedBy_error: false,
+            creatingTicket: false,
         };
     },
     props: {
@@ -186,20 +187,30 @@ export default {
             this.creatingTicket = true;
 
             this.$http.post('http://localhost:3000/ticket/create-ticket', this.form).then(response => {
-                if (this.errors) {
+                if (response.data.Error) {
                     this.creatingTicket = false;
-                    this.handleErrors(this.errors);
+                    this.handleErrors(response.data.Error);
                 } else {
                     this.form.title = '';
                     this.form.info = '';
                     this.form.allocatedTo = null;
                     this.form.raisedBy = null;
                     this.$emit('ticketCreated', response.data);
-                    // Event emit where we get the created ticket 
                     $('#' + this.dataTarget).modal('hide')
                 }
             });
-        }
+        },
+        handleErrors(sentError){
+            if (sentError.title) {
+                this.title_error = sentError.title;
+            }
+            if (sentError.info) {
+                this.info_error = sentError.info;
+            }
+            if (sentError.raisedBy) {
+                this.raisedBy_error = sentError.raisedBy;
+            }
+        },
     },
 
 }

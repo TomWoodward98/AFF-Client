@@ -21,6 +21,7 @@
                 ></create-user>
             </div>
             <ul v-if="users.length > 0" class="list-group col-12">
+                <!-- TODO - Convert to own component -->
                 <li 
                     v-for="user in users" 
                     :key="user.id" 
@@ -52,7 +53,7 @@
                                             class="btn btn-outline-info"
                                             @click="approveUser(user)"
                                         >
-                                            Approve User
+                                            Approve
                                         </button>
                                     </div>
                                     <div class="col-4">
@@ -122,9 +123,6 @@ export default {
             loadedUser: {},
             open: false,
         };
-    },
-    props: {
-        
     },
     mounted() {
         this.$http.get('http://localhost:3000/api/get-users').then(response => {

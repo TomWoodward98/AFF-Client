@@ -45,7 +45,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
-                        <button id="createDepartmentBtn" type="button" class="btn btn-secondary" @click.prevent="createDepartment()">Create Department</button>
+                        <button id="createDepartmentBtn" type="button" class="btn btn-secondary" @click.prevent="createDepartment()">{{ creatingDepartment ? 'Creating Department' : 'Create Department' }}</button>
                     </div>
                 </form>
             </div>
@@ -58,7 +58,8 @@ export default {
     name: "CreateDepartment",
     data() {
         return {
-            form : {
+            creatingDepartment: false,
+            form: {
                 name: '',
             },
             name_error: false,
@@ -66,9 +67,6 @@ export default {
     },
     props: {
         dataTarget: String,
-    },
-    mounted() {
-
     },
     methods: {
         createDepartment() {
@@ -88,16 +86,22 @@ export default {
             this.creatingDepartment = true;
 
             this.$http.post('http://localhost:3000/department/create-department', this.form).then(response => {
-                if (this.errors) {
+                if (response.data.Error) {
                     this.creatingDepartment = false;
-                    this.handleErrors(this.errors);
+                    this.handleErrors(response.data.Error);
                 } else {
+                    this.creatingDepartment = false;
                     this.form.name = '';
                     this.$emit('departmentCreated', response.data);
                     $('#' + this.dataTarget).modal('hide')
                 }
             });
-        }
+        },
+        handleErrors(sentError){
+            if (sentError.name) {
+                this.name_error = sentError.name;
+            }
+        },
     },
 
 }

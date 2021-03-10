@@ -55,7 +55,7 @@
 
 <script>
 export default {
-    name: "CreateTicket",
+    name: "CreateColumn",
     data() {
         return {
             users: null,
@@ -63,6 +63,7 @@ export default {
                 name: '',
             },
             name_error: false,
+            creatingColumn: false,
         };
     },
     props: {
@@ -76,7 +77,7 @@ export default {
 
             if (this.form.name.trim() === '') {
                 failed = true;
-                this.name_error = 'Please give this ticket a name'
+                this.name_error = 'Please give this Column a name'
             }
 
             if (failed) {
@@ -86,16 +87,22 @@ export default {
             this.creatingColumn = true;
 
             this.$http.post('http://localhost:3000/ticket/create-column', this.form).then(response => {
-                if (this.errors) {
+                if (response.data.Error) {
                     this.creatingColumn = false;
-                    this.handleErrors(this.errors);
+                    this.handleErrors(response.data.Error);
                 } else {
                     this.form.name = '';
+                    this.creatingColumn = false;
                     this.$emit('columnCreated', response.data);
                     $('#' + this.dataTarget).modal('hide')
                 }
             });
-        }
+        },
+        handleErrors(sentError){
+            if (sentError.name) {
+                this.name_error = sentError.name;
+            }
+        },
     },
 
 }

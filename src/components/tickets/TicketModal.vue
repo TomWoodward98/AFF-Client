@@ -14,14 +14,20 @@
                             v-else
                             autocomplete="off"
                             class="form-control"
+                            :class="{ 'is-invalid' : title_error }"
                             id="editTitle"
                             name="editTitle"
                             required
                             type="text"
                             :placeholder="ticket.title"
-                            :value="ticket.title"
-                            @change="changeTitle($event)"
+                            v-model="form.title"
                         >
+                        <span
+                            class="invalid-feedback"
+                            role="alert"
+                            v-if="title_error">
+                            <strong>{{ title_error }}</strong>
+                        </span>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -36,28 +42,41 @@
                                         v-if="clientAddInfo || edit"
                                         autocomplete="off"
                                         class="form-control resize-none"
+                                        :class="{ 'is-invalid' : info_error }"
                                         id="editInfo"
                                         name="editInfo"
                                         required
                                         type="text"
                                         :placeholder="ticket.info"
-                                        :value="ticket.info"
-                                        @change="changeInfo($event)"
+                                        v-model="form.info"
                                     >
                                     </textarea>
+                                    <span
+                                        class="invalid-feedback"
+                                        role="alert"
+                                        v-if="info_error">
+                                        <strong>{{ info_error }}</strong>
+                                    </span>
                                     <p class="m-0"><strong>Ticket Status</strong></p>
                                     <p v-if="ticket.status && !edit">{{ ticket.status.name }}</p>
                                     <select
                                         v-else-if="ticket.status && edit"
                                         autocomplete="off"
                                         class="form-control"
+                                        :class="{ 'is-invalid' : status_error }"
                                         id="editStatus"
                                         name="editStatus"
-                                        @change="changeStatus($event)"
+                                        v-model="form.status"
                                     >
-                                        <option :value="ticket.status">{{ ticket.status.name }}</option>
-                                        <option v-for="status in statuses" :key="status._id" :value="status._id">{{ status.name }}</option>
+                                        <option value=""></option>
+                                        <option v-for="status in statuses" :key="status._id" :value="status">{{ status.name }}</option>
                                     </select>
+                                    <span
+                                        class="invalid-feedback"
+                                        role="alert"
+                                        v-if="status_error">
+                                        <strong>{{ status_error }}</strong>
+                                    </span>
                                     <p class="m-0"><strong>Created at</strong></p>
                                     <p>{{ ticket.created_at }}</p>
                                 </div>
@@ -72,11 +91,10 @@
                                         class="form-control"
                                         id="editAssigned"
                                         name="editAssigned"
-                                        @change="changeAllocated($event)"
+                                        v-model="form.allocatedTo"
                                     >
-                                        <option v-if="ticket.allocated_to" :value="ticket.allocated_to">{{ ticket.allocated_to.email }}</option>
-                                        <option v-else value="null"></option>
-                                        <option v-for="user in supportUsers" :key="user._id" :value="user._id">{{ user.email }}</option>
+                                        <option value=""></option>
+                                        <option v-for="user in supportUsers" :key="user._id" :value="user">{{ user.email }}</option>
                                     </select>
                                     <p class="m-0"><strong>Created By</strong></p>
                                     <p>{{ ticket.created_by ? ticket.created_by.email : '' }}</p>
@@ -158,6 +176,10 @@ export default {
                 allocatedTo: null,
             },
             clientAddInfo: false,
+            editingTicket: false,
+            title_error: false,
+            info_error: false,
+            status_error: false,
         }
     },
     props: {
@@ -184,18 +206,6 @@ export default {
         },
     },
     methods: {
-        changeTitle(event) {
-            this.form.title = event.target.value
-        },
-        changeInfo(event) {
-            this.form.info = event.target.value
-        },
-        changeStatus(event) {
-            this.form.status = event.target.value
-        },
-        changeAllocated(event) {
-            this.form.allocatedTo = event.target.value
-        },
         clientEdit(editedStatus) {
             for (let i = 0; i < this.statuses.length; i++) {
                 if (this.statuses[i].name === 'Open' && editedStatus === 'reopen') {
@@ -219,61 +229,58 @@ export default {
         editTicket() {
             let failed = false;
 
+            this.title_error = false;
+            this.info_error = false;
+            this.status_error = false;
+
             this.form.ticket = this.ticket;
 
-            if (this.form.title.trim() === '') {
-                this.form.title = this.ticket.title;
-            }
+            // if (this.form.title.trim() === '') {
+            //     this.form.title = this.ticket.title;
+            // }
 
-            if (this.form.info.trim() === '') {
-                this.form.info = this.ticket.info;
-            }
+            // if (this.form.info.trim() === '') {
+            //     this.form.info = this.ticket.info;
+            // }
             
-            if (this.form.status === null) {
-                this.form.status = this.ticket.status;
-            } else {
-                let statuses = this.statuses
-                for (let i = 0; i < statuses.length; i++) {
-                    if (statuses[i]._id === this.form.status) {   
-                        this.form.status = statuses[i];
-                    }
-                }
-            }
+            // if (this.form.status === null) {
+            //     this.form.status = this.ticket.status;
+            // }
 
-            if (this.form.allocatedTo === null) {
-                this.form.allocatedTo = this.ticket.allocated_to;
-            } else {
-                let users = this.users
-                for (let i = 0; i < users.length; i++) {
-                    if (users[i]._id === this.form.allocatedTo) {   
-                        this.form.allocatedTo = users[i];
-                    }
-                }
-            }
+            // if (this.form.allocatedTo === null) {
+            //     this.form.allocatedTo = this.ticket.allocated_to;
+            // }
 
             if (failed) {
                 return false;
             }
 
-            this.edittingTicket = true;
+            this.editingTicket = true;
 
             this.$http.post('http://localhost:3000/ticket/update-ticket', this.form).then(response => {
-                if (this.errors) {
-                    this.edittingTicket = false;
-                    this.handleErrors(this.errors);
+                if (response.data.Error) {
+                    this.editingTicket = false;
+                    this.handleErrors(response.data.Error);
                 } else {
-                    this.form.ticket = null
                     this.form.title = '';
                     this.form.info = '';
-                    this.form.status = null;
-                    this.form.allocatedTo = null;
+                    this.form.status = '';
+                    this.form.allocatedTo = '';
+                    this.editingTicket = false;
                     this.edit = false;
                     this.clientAddInfo = false;
                     this.$emit('ticketEdited', response.data);
                     $('#' + this.dataTarget).modal('hide')
                 }
             });
-        }
+        },
+        handleErrors(sentError){
+            if (sentError.ticket) {
+                this.title_error = sentError.ticket;
+                this.info_error = sentError.ticket;
+                this.status_error = sentError.ticket;
+            }
+        },
     },
 }
 </script>
