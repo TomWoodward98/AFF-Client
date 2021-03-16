@@ -1,5 +1,5 @@
 <template>
-    <div class="col-sm-12 col-md-4 my-1 mr-1 bg-light-grey">
+    <div class="col-sm-12 col-md-3 my-1 mr-1 bg-light-grey">
         <div class="row">
             <div class="col-12">
                 <p>{{ column.name }}</p>

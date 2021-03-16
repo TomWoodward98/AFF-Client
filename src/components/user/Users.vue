@@ -20,6 +20,18 @@
                     @userCreated="addUser($event)"
                 ></create-user>
             </div>
+            <div v-if="userDeleted" class="col-12 alert alert-warning alert-dismissible fade show" role="alert">
+                <strong>Alert!</strong> User was deleted Successfully!
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div v-if="userCreated" class="col-12 alert alert-success alert-dismissible fade show" role="alert">
+                <strong>Success!</strong> User was Created Successfully!
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
             <div class="col-12 pl-0">
                 <ul v-if="users.length > 0" class="list-group col-12 mx-3">
                     <user-list-item
@@ -27,15 +39,11 @@
                         :key="user.id" 
                         :user="user"
                         @editModal="modalOpen($event)"
+                        @userUpdated="editUser($event)"
+                        @delete="deleteUser($event)"
                     ></user-list-item>
                 </ul>
             </div>
-            <edit-user
-                v-if="open"
-                dataTarget="editUserModal"
-                @userUpdated="editUser($event)"
-                :user="loadedUser"
-            ></edit-user>
         </div>
     </div>
 </template>
@@ -43,19 +51,19 @@
 <script>
 import CreateUser from "./CreateUser";
 import UserListItem from "./UserListItem";
-import EditUser from "./EditUser";
 
 export default {
     name: "Users",
     components: {
         CreateUser,
         UserListItem,
-        EditUser,
     },
     data() {
         return {
             users: [],
             loadedUser: {},
+            userDeleted: false,
+            userCreated: false,
             open: false,
         };
     },
@@ -71,6 +79,7 @@ export default {
         },
         addUser(user) {
             this.users.push(user);
+            this.userCreated = true;
         },
         editUser(user) {
             let users = this.users
@@ -80,6 +89,24 @@ export default {
                 }
             }
             this.open = false;
+        },
+        deleteUser(user) {
+            let form = {
+                userId: user._id,
+            };
+            this.$http.post('http://localhost:3000/api/delete-user', form).then(response => {
+                if (this.errors) {
+                    this.handleErrors(this.errors);
+                } else {
+                    let users = this.users
+                    for (let i = 0; i < users.length; i++) {
+                        if (users[i]._id === user._id) {
+                            this.users = this.users.filter(dUser => dUser._id !== user._id);
+                        }
+                    }
+                    this.userDeleted = true;
+                }
+            });
         },
     },
 }

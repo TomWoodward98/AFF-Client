@@ -108,15 +108,16 @@
                 </form>
                 <div class="modal-footer">
                     <button
+                        v-if="!currentUser.isAdmin"
                         @click.prevent="switchToChat()"
                         class="btn btn-info"
                         data-target="#ticketChatModal"
                         data-toggle="modal"
                     >{{ ticket.chat !== null ? 'Chat' : 'Create Chat' }}</button>
                     <button
-                        v-if="!currentUser.isClient"
+                        v-if="currentUser.isSupport"
                         @click.prevent="edit = !edit" 
-                        :class="edit ? 'btn btn-outline-info' : 'btn btn-info'"
+                        :class="edit ? 'btn btn-outline-danger' : 'btn btn-info'"
                     >
                         {{ edit ? 'Cancel' : 'Edit' }}
                     </button>
@@ -125,7 +126,7 @@
                         v-if="edit" 
                         @click.prevent="editTicket()"
                     >
-                        Edit Ticket
+                        Confirm Edit
                     </button>
                     <button
                         v-if="currentUser.isClient && isUsersTicket && ticket.status.name === 'Solved'"
@@ -135,14 +136,14 @@
                         Reopen
                     </button>
                     <button
-                        v-if="currentUser.isClient && isUsersTicket && ticket.status.name === 'Solved'"
+                        v-if="!currentUser.isSupport && isUsersTicket && ticket.status.name === 'Solved'"
                         class="btn btn-info" 
                         @click.prevent="clientEdit('close')"
                     >
                         Confirm and close
                     </button>
                     <button
-                        v-if="currentUser.isClient && isUsersTicket && ticket.status.name === 'Suspended'"
+                        v-if="!currentUser.isSupport && isUsersTicket && ticket.status.name === 'Suspended'"
                         class="btn btn-info" 
                         @click="clientAddInfo = !clientAddInfo"
                     >
@@ -156,7 +157,7 @@
                        Confirm Edit 
                     </button>
                     <button
-                        v-if="(isUsersTicket) && (isTicketSuspendedOrNotAllocated) && (!isTicketCancelled)"
+                        v-if="(isUsersTicket || currentUser.isSupport) && (isTicketSuspendedOrNotAllocated) && (!isTicketCancelled)"
                         class="btn btn-danger" 
                         @click.prevent="clientEdit('cancel')"
                     >
@@ -228,16 +229,17 @@ export default {
         clientEdit(editedStatus) {
             for (let i = 0; i < this.statuses.length; i++) {
                 if (this.statuses[i].name === 'Open' && editedStatus === 'reopen') {
-                    this.form.status = this.statuses[i]._id;
+                    this.form.status = this.statuses[i];
                     this.editTicket();
                     break;
                 } else if (this.statuses[i].name === 'Closed' && editedStatus === 'close') {
-                    this.form.status = this.statuses[i]._id;
+                    this.form.status = this.statuses[i];
                     this.editTicket();
                     break;
                 } else if (this.statuses[i].name === 'Cancelled' && editedStatus === 'cancel') {
-                    this.form.status = this.statuses[i]._id;
+                    this.form.status = this.statuses[i];
                     this.editTicket();
+                    console.log('Hit here', this.form.status);
                     break;
                 }
             }

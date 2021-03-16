@@ -1,5 +1,5 @@
 <template>
-    <button @click="logout(currentUser)" class="nav-item nav-link border-0 bg-transparent">Logout</button>
+    <button @click="logout(currentUser)" data-toggle="collapse" data-target="#navbarNavAltMarkup" class="nav-item nav-link border-0 bg-transparent">Logout</button>
 </template>
 
 <script>

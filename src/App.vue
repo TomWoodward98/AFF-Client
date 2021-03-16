@@ -1,7 +1,7 @@
 <template>
     <div id="app" class="m-0">
-        <navigation 
-            v-if="currentUser && currentUser.isAdmin"
+        <navigation
+            v-if="Object.keys(currentUser).length !== 0"
             :currentUser="currentUser"
         ></navigation>
         <div class="container mt-3">

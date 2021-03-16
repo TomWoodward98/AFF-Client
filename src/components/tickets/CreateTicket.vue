@@ -105,7 +105,7 @@
                                     v-model="form.raisedBy"
                                 >
                                     <option value=""></option>
-                                    <option v-for="user in users" :key="user.id" :value="user">{{ user.email }}</option>
+                                    <option v-for="user in clientUsers" :key="user.id" :value="user">{{ user.email }}</option>
                                 </select>
                                 <span
                                     class="invalid-feedback"
@@ -152,6 +152,9 @@ export default {
     computed: {
         supportUsers() {
             return this.users.filter(user => user.user_type.type === 'support');
+        },
+        clientUsers() {
+            return this.users.filter(user => user.user_type.type === 'client');
         },
     },
     methods: {

@@ -6,9 +6,9 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav">
-                    <router-link to="/home" class="nav-item nav-link" data-toggle="collapse" data-target="#navbarNavAltMarkup">Home</router-link>
-                    <router-link to="/users" class="nav-item nav-link" data-toggle="collapse" data-target="#navbarNavAltMarkup">Users</router-link>
-                    <router-link to="/departments" class="nav-item nav-link" data-toggle="collapse" data-target="#navbarNavAltMarkup">Departments</router-link>
+                    <router-link v-if="currentUser.isAdmin" to="/home" class="nav-item nav-link" data-toggle="collapse" data-target="#navbarNavAltMarkup">Home</router-link>
+                    <router-link v-if="currentUser.isAdmin" to="/users" class="nav-item nav-link" data-toggle="collapse" data-target="#navbarNavAltMarkup">Users</router-link>
+                    <router-link v-if="currentUser.isAdmin" to="/departments" class="nav-item nav-link" data-toggle="collapse" data-target="#navbarNavAltMarkup">Departments</router-link>
                     <logout
                         :currentUser="currentUser"
                     ></logout>

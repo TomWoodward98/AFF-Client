@@ -6,7 +6,7 @@
             </div>
         </div>
         <div class="row my-3">
-            <div class="col-3 text-left">
+            <div class="col-2 text-left">
                 <dropdown-buttons
                     :currentUser="currentUser"
                 ></dropdown-buttons>
@@ -21,7 +21,7 @@
                     @columnCreated="addColumn($event)"
                 ></create-column>
             </div>
-            <div class="col-9" v-if="!currentUser.isClient">
+            <div class="col-10" v-if="!currentUser.isClient">
                 <ticket-filters
                     :currentUser="currentUser"
                     :statuses="columns"

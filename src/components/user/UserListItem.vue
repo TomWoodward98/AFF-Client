@@ -1,12 +1,12 @@
 <template>
     <li
         class="list-group-item row p-2"
-        :class="{ 'border border-danger' : !user.approved }"
+        :class="{ 'border border-danger' : !loadedUser.approved }"
     >
         <div class="col-12">
             <div class="row align-items-center">
                 <div class="col-6">
-                    {{ user.first_name }} {{ user.last_name }} ({{user.user_type.type}})
+                    {{ loadedUser.first_name }} {{ loadedUser.last_name }} ({{loadedUser.user_type.type}})
                 </div>
                 <div class="col-6">
                     <div class="row align-items-center">
@@ -16,17 +16,17 @@
                                 class="btn btn-info"
                                 data-target="#editUserModal"
                                 data-toggle="modal"
-                                @click="modalOpen(user)"
+                                @click="modalOpen(loadedUser)"
                             >
                                 Edit
                             </button>
                         </div>
                         <div class="col-sm-12 col-md-4 mb-1">
                             <button
-                                v-if="!user.approved"
+                                v-if="!loadedUser.approved"
                                 type="button"
                                 class="btn btn-outline-info"
-                                @click="approveUser(user)"
+                                @click="approveUser(loadedUser)"
                             >
                                 Approve
                             </button>
@@ -40,17 +40,17 @@
                 </div>
             </div>
             <div class="row">
-                <div class="collapse col-12 my-3" :id="'collapseDel-' + user._id">
+                <div class="collapse col-12 my-3" :id="'collapseDel-' + loadedUser._id">
                     <div class="col-12 card card-body">
                         <div class="row">
-                            <p class="col-12">Are you sure you want to delete {{ user.first_name }}?</p>
+                            <p class="col-12">Are you sure you want to delete {{ loadedUser.first_name }}?</p>
                         </div>
                         <div class="row">
                             <div class="col-6">
                                 <button
                                     type="button"
                                     class="btn btn-danger"
-                                    @click="deleteUser(user)"
+                                    @click="deleteUser(loadedUser)"
                                 >
                                     Yes
                                 </button>
@@ -70,16 +70,27 @@
                 </div>
             </div>
         </div>
+        
+        <edit-user
+            v-if="open"
+            dataTarget="editUserModal"
+            @userUpdated="editUser($event)"
+            :user="loadedUser"
+        ></edit-user>
     </li>
 </template>
 
 <script>
+import EditUser from "./EditUser";
 
 export default {
     name: "UserListItem",
+    components: {
+        EditUser,
+    },
     data() {
         return {
-            loadedUser: {},
+            loadedUser: this.user,
             open: false,
         };
     },
@@ -89,16 +100,11 @@ export default {
     methods: {
         modalOpen(user) {
             this.$emit('editModal', user);
-            this.loadedUser = user;
             this.open = true;
         },
         editUser(user) {
-            let users = this.users
-            for (let i = 0; i < users.length; i++) {
-                if (users[i]._id === user._id) {
-                    this.users.splice(i, 1, user);
-                }
-            }
+            this.$emit('userUpdated', user);
+            this.loadedUser = user;
             this.open = false;
         },
         approveUser(user) {
@@ -116,21 +122,7 @@ export default {
             });
         },
         deleteUser(user) {
-            let form = {
-                userId: user._id,
-            };
-            this.$http.post('http://localhost:3000/api/delete-user', form).then(response => {
-                if (this.errors) {
-                    this.handleErrors(this.errors);
-                } else {
-                    let users = this.users
-                    for (let i = 0; i < users.length; i++) {
-                        if (users[i]._id === user._id) {
-                            this.users = this.users.filter(dUser => dUser._id !== user._id);
-                        }
-                    }
-                }
-            });
+            this.$emit('delete', user);
         }
     },
 }
