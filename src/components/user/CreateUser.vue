@@ -165,7 +165,7 @@
                                     type="password"
                                     required
                                     placeholder="Confirm Password"
-                                    v-model="password_confirmation"
+                                    v-model="form.password_confirmation"
                                 >
                                 <span
                                     class="invalid-feedback"
@@ -253,6 +253,7 @@ export default {
                 last_name: '',
                 email: '',
                 password: '',
+                password_confirmation: '',  
                 department: null,
                 user_type: null,
                 approved: true,
@@ -263,7 +264,6 @@ export default {
             email_error: false,
             emailFormat: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+[.]+[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9-]+)*$/,
             password_error: false,
-            password_confirmation: '',
             password_confirmation_error: false,
             department_error: false,
             user_type_error: false,
@@ -324,12 +324,12 @@ export default {
                 this.password_error = 'Please enter a valid password'
             }
 
-            if (this.password_confirmation.trim() === '') {
+            if (this.form.password_confirmation.trim() === '') {
                 failed = true;
                 this.password_confirmation_error = 'Please confirm your password'
             }
 
-            if (this.form.password !== this.password_confirmation) {
+            if (this.form.password !== this.form.password_confirmation) {
                 failed = true;
                 this.password_error = 'Your Passwords do not match'
                 this.password_confirmation_error = 'Your Passwords do not match'
@@ -362,7 +362,7 @@ export default {
                     this.form.last_name = '';
                     this.form.email = '';
                     this.form.password = '';
-                    this.password_confirmation = '';
+                    this.form.password_confirmation = '';
                     this.form.department = null;
                     this.form.user_type = null;
                     this.$emit('userCreated', response.data);

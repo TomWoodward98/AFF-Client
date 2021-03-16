@@ -27,10 +27,18 @@ new Vue({
   render: (h) => h(App),
   mounted() {
     this.getCurrentUser();
+    this.getStatuses();
+    this.getTickets();
   },
   methods: {
-     getCurrentUser() {
-       this.$store.dispatch('getCurrentUser')
+    getCurrentUser() {
+      this.$store.dispatch('getCurrentUser');
+    },
+    getStatuses() {
+      this.$store.dispatch('getStatuses')
+    },
+    getTickets() {
+      this.$store.dispatch('getTickets')
     }
   },
 }).$mount('#app');

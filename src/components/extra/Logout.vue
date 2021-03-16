@@ -21,6 +21,7 @@ export default {
             const baseURL = 'http://localhost:3000/api/logout';
             this.$http.post(baseURL, currentUser).then(res => {
                 this.$store.commit('SET_CURRENT_USER', {})
+                this.$store.commit('SET_TICKETS', [])
                 this.$router.push('/welcome')
             });
         },

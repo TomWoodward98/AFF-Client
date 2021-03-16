@@ -24,7 +24,12 @@
             <div class="col-9" v-if="!currentUser.isClient">
                 <ticket-filters
                     :currentUser="currentUser"
+                    :statuses="columns"
+                    :users="users"
                     @filterAllocatedTickets="getAllocatedTickets($event)"
+                    @filterCreatedByTickets="getCreatedByTickets($event)"
+                    @filterRaisedByTickets="getRaisedByTickets($event)"
+                    @filterStatusTickets="getStatusTickets($event)"
                     @removeUserTicketFilter="removeUserFilter()"
                 ></ticket-filters>
             </div>
@@ -112,6 +117,9 @@ export default {
     computed: {
         currentUser() {
             return this.$store.state.user;
+        },
+        storeTickets() {
+            return this.$store.state.tickets;
         }
     },
     created() {
@@ -122,6 +130,7 @@ export default {
         this.$http.get('http://localhost:3000/ticket/get-tickets').then(response => {
             this.tickets = response.data;
         });
+        // TODO:: Make it so we get this from store
         this.$http.get('http://localhost:3000/ticket/get-columns').then(response => {
             this.columns = response.data;
         });
@@ -147,10 +156,25 @@ export default {
         addColumn(column) {
             this.columns.push(column);
         },
+
         getAllocatedTickets(user) {
-            let filteredTickets = this.tickets.filter(ticket => ticket.allocated_to._id === user);
+            let filteredTickets = this.storeTickets.filter(ticket => ticket.allocated_to._id === user);
             this.tickets = filteredTickets;
         },
+        getCreatedByTickets(user) {
+            let filteredTickets = this.storeTickets.filter(ticket => ticket.created_by._id === user);
+            this.tickets = filteredTickets;
+        },
+        getRaisedByTickets(user) {
+            let filteredTickets = this.storeTickets.filter(ticket => ticket.raised_by._id === user);
+            this.tickets = filteredTickets;
+        },
+        getStatusTickets(status) {
+            let filteredTickets = this.storeTickets.filter(ticket => ticket.status._id === status);
+            this.tickets = filteredTickets;
+        },
+
+
         removeUserFilter() {
             this.$http.get('http://localhost:3000/ticket/get-tickets').then(response => {
                 this.tickets = response.data;

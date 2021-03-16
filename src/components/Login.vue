@@ -162,6 +162,7 @@ export default {
                         this.errors = false;
                         this.confirmation = true;
                         this.loadCurrentUser();
+                        this.loadTickets();
                         this.$router.push('home');
                     }
                 }
@@ -185,6 +186,11 @@ export default {
         loadCurrentUser() {
             this.$http.get('http://localhost:3000/api/get-current-user').then((res) => {
                 this.$store.commit('SET_CURRENT_USER', res.data);
+            });
+        },
+        loadTickets() {
+            this.$http.get('http://localhost:3000/ticket/get-tickets').then(response => {
+                this.$store.commit('SET_TICKETS', response.data);
             });
         },
     },

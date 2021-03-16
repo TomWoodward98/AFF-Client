@@ -85,7 +85,7 @@
                             <div class="col-6">
                                 <div class="col-12">
                                     <p class="m-0"><strong>Assigned to</strong></p>
-                                    <p v-if="ticket.allocated_to && !edit">{{ ticket.allocated_to ? ticket.allocated_to.email : 'Assign a team member' }}</p>
+                                    <p v-if="!edit">{{ ticket.allocated_to ? ticket.allocated_to.email : 'Assign a team member' }}</p>
                                     <select
                                         v-else-if="edit"
                                         autocomplete="off"
@@ -157,7 +157,7 @@
                     </button>
                     <button
                         v-if="(isUsersTicket) && (isTicketSuspendedOrNotAllocated) && (!isTicketCancelled)"
-                        class="btn btn-info" 
+                        class="btn btn-danger" 
                         @click.prevent="clientEdit('cancel')"
                     >
                         Cancel Ticket
