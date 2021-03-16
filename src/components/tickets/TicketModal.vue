@@ -101,6 +101,8 @@
                                     <p>{{ ticket.created_by ? ticket.created_by.email : '' }}</p>
                                     <p class="m-0"><strong>Raised By</strong></p>
                                     <p>{{ ticket.raised_by ? ticket.raised_by.email : '' }}</p>
+                                    <p class="m-0"><strong>Department</strong></p>
+                                    <p>{{ ticket.raised_by ? ticket.raised_by.department.name : '' }}</p>
                                 </div>
                             </div>
                         </div>
