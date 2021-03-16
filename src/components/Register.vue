@@ -1,5 +1,5 @@
 <template>
-    <div class="col-12">
+    <div class="col-12 col-lg-6 mx-auto">
         <div class="row">
             <div v-if="successReg" class="alert alert-success alert-dismissible fade show col-12" role="alert">
                 <h4 class="alert-heading"><strong>Account created successfully</strong>

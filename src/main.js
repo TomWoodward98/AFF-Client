@@ -3,6 +3,7 @@ import VueFlashMessage from 'vue-flash-message';
 import App from './App.vue';
 import router from './router';
 import store from './store/store'
+
 import './style/main.css'
 import '../node_modules/bootstrap/dist/css/bootstrap.css';
 import 'vue-flash-message/dist/vue-flash-message.min.css';

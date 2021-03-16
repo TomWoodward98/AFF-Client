@@ -6,6 +6,7 @@ import Register from './components/Register.vue';
 import Home from './components/Home.vue';
 import Users from './components/user/Users.vue';
 import Departments from './components/department/Departments.vue';
+import Socket from './components/chat/Socket.vue';
 import axios from 'axios';
 
 Vue.use(Router);

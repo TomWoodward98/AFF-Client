@@ -1,6 +1,9 @@
 <template>
     <div id="app" class="m-0">
-        <navigation v-if="currentUser && currentUser.isAdmin"></navigation>
+        <navigation 
+            v-if="currentUser && currentUser.isAdmin"
+            :currentUser="currentUser"
+        ></navigation>
         <div class="container mt-3">
             <div class="row">
                 <router-view></router-view>

@@ -8,7 +8,7 @@
         <div class="row">
             <div class="col-12 cursor-pointer">
                 <div 
-                    class="col-12 p-3 bg-grey" 
+                    class="col-12 p-3 bg-info text-off-white rounded" 
                     :class="{'border border-danger drop-shadow' : ticketSuspended }">
                     <p>{{ ticket.title }}</p>
                 </div>
@@ -18,6 +18,7 @@
 </template>
 
 <script>
+
 export default {
     name: "Tickets",
     data() {

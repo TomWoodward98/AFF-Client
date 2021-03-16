@@ -1,5 +1,5 @@
 <template>
-    <div class="col-12">
+    <div class="col-12 col-lg-6 mx-auto">
         <div class="row">
             <div class="col-12">
                 <h1>Login</h1>
@@ -184,7 +184,7 @@ export default {
         },
         loadCurrentUser() {
             this.$http.get('http://localhost:3000/api/get-current-user').then((res) => {
-                this.$store.commit('setCurrentUser', res.data);
+                this.$store.commit('SET_CURRENT_USER', res.data);
             });
         },
     },

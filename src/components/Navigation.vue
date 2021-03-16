@@ -6,9 +6,12 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav">
-                    <router-link to="/home" class="nav-item nav-link">Home</router-link>
-                    <router-link to="/users" class="nav-item nav-link">Users</router-link>
-                    <router-link to="/departments" class="nav-item nav-link">Departments</router-link>
+                    <router-link to="/home" class="nav-item nav-link" data-toggle="collapse" data-target="#navbarNavAltMarkup">Home</router-link>
+                    <router-link to="/users" class="nav-item nav-link" data-toggle="collapse" data-target="#navbarNavAltMarkup">Users</router-link>
+                    <router-link to="/departments" class="nav-item nav-link" data-toggle="collapse" data-target="#navbarNavAltMarkup">Departments</router-link>
+                    <logout
+                        :currentUser="currentUser"
+                    ></logout>
                 </div>
             </div>
         </nav>
@@ -16,8 +19,16 @@
 </template>
 
 <script>
+import Logout from "./extra/Logout";
+
 export default {
     name: 'Navigation',
+    components: {
+        Logout,
+    },
+    props: {
+        currentUser: Object
+    },
     
 }
 </script>

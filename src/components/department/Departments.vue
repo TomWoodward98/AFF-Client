@@ -5,7 +5,7 @@
                 <h1>University of Knowledge Departments</h1>
             </div>
         </div>
-        <div class="row">
+        <div class="row px-3">
             <div class="col-12 text-left pl-0 my-3">
                 <button 
                     type="button"
@@ -20,7 +20,7 @@
                     @departmentCreated="addDepartment($event)"
                 ></create-department>
             </div>
-            <ul v-if="departments.length > 0" class="list-group col-12">
+            <ul v-if="departments.length > 0" class="list-group col-12 p-0">
                 <li 
                     v-for="department in departments" 
                     :key="department.id" 

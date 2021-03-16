@@ -1,4 +1,7 @@
 /* Border */
+.border-2 {
+    border: 2px solid #dee2e6 !important;
+}
 .drop-shadow {
    filter: drop-shadow(0 0 0.15rem crimson);
 }
@@ -7,8 +10,17 @@
 .bg-grey {
     background-color: rgb(155, 155, 155);
 }
+.bg-light-blue {
+    background-color: #7fd1fa !important;
+}
 .bg-light-grey {
-    background-color: lightgrey;
+    background-color: rgb(235, 235, 235);
+}
+.bg-transparent {
+    background-color: transparent;
+}
+.nav-link:hover {
+    background-color: #e6e6e6 !important;
 }
 
 /* Flex */
@@ -30,7 +42,9 @@
 .resize-none {
     resize: none;
 }
-
+.text-off-white {
+    color: #ebebeb;
+}
 .word-break-word {
     word-break: break-word;
 }

@@ -6,7 +6,7 @@
             </div>
         </div>
         <div class="row my-3">
-            <div class="col-2 text-left">
+            <div class="col-3 text-left">
                 <dropdown-buttons
                     :currentUser="currentUser"
                 ></dropdown-buttons>
@@ -21,41 +21,54 @@
                     @columnCreated="addColumn($event)"
                 ></create-column>
             </div>
-            <div class="col-8" v-if="!currentUser.isClient">
+            <div class="col-9" v-if="!currentUser.isClient">
                 <ticket-filters
                     :currentUser="currentUser"
                     @filterAllocatedTickets="getAllocatedTickets($event)"
                     @removeUserTicketFilter="removeUserFilter()"
                 ></ticket-filters>
             </div>
-            <div class="col-2 text-right ml-auto">
-                <logout
-                    :currentUser="currentUser"
-                ></logout>
-            </div>
         </div>
         <div v-if="suspended.suspendedTicketAlert" class="row mt-3 mx-0">
             <alert-component></alert-component>
         </div>
-        <div v-if="columns.length > 0" class="row mx-auto overflow-x-scroll flex-nowrap max-w-100 h-100">
+        <div  v-if="chatCreated" class="col-12 alert alert-success alert-dismissible fade show" role="alert">
+            <strong>Chat for ticket created</strong> 
+            Open the ticket to open the chat
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div v-if="columns.length > 0" class="row mx-auto overflow-x-scroll flex-nowrap">
             <ticket-columns 
                 v-for="column in columns" 
                 :currentUser="currentUser"
-                :key="column.id"
+                :key="column._id"
                 :tickets="tickets"
                 :column="column"
+                :columns="columns"
+                :users="users"
                 @selectedTicket="loadModal($event)"
                 @userHasTicketSuspended="alertUserSus($event)"
             ></ticket-columns>
             <ticket-modal
-                v-if="selectedTicket"
+                v-if="Object.keys(selectedTicket).length !== 0"
                 :currentUser="currentUser"
                 :users="users"
                 :ticket="selectedTicket"
                 :statuses="columns"
+                :key="selectedTicket._id"
                 dataTarget="viewTicketModal"
                 @ticketEdited="editTicket($event)"
+                @openChat="openChat($event)"
             ></ticket-modal>
+            <chat-modal 
+                v-if="isChatOpen && selectedTicket"
+                dataTarget="ticketChatModal"
+                :key="selectedTicket.chat._id"
+                :ticket="selectedTicket"
+                :currentUser="currentUser"
+            ></chat-modal>
         </div>
     </div>
 </template>
@@ -65,10 +78,10 @@ import AlertComponent from "./extra/AlertComponent";
 import CreateTicket from "./tickets/CreateTicket";
 import CreateColumn from "./tickets/CreateColumn";
 import DropdownButtons from "./extra/DropdownButtons";
-import Logout from "./extra/Logout";
 import TicketFilters from "./tickets/TicketFilters";
 import TicketColumns from "./tickets/TicketColumns";
 import TicketModal from "./tickets/TicketModal";
+import ChatModal from './chat/ChatModal.vue';
 
 export default {
     name: 'Home',
@@ -76,8 +89,8 @@ export default {
         AlertComponent,
         CreateTicket,
         CreateColumn,
+        ChatModal,
         DropdownButtons,
-        Logout,
         TicketFilters,
         TicketColumns,
         TicketModal,
@@ -87,11 +100,13 @@ export default {
             users: [],
             tickets: [],
             columns: [],
+            chatCreated: false,
             selectedTicket: {},
             suspended: {
                 suspendedTicketAlert: false,
                 suspendedTicket: {},
             },
+            isChatOpen: false,
         };
     },
     computed: {
@@ -111,6 +126,12 @@ export default {
             this.columns = response.data;
         });
     },
+    mounted() {
+        let chatModal = document.getElementById('ticketChatModal')
+        if (!chatModal) {
+            this.isChatOpen = false;
+        }
+    },
     methods: {
         addTicket(ticket) {
             this.tickets.push(ticket);
@@ -126,9 +147,6 @@ export default {
         addColumn(column) {
             this.columns.push(column);
         },
-        loadModal(ticket) {
-            this.selectedTicket = ticket
-        },
         getAllocatedTickets(user) {
             let filteredTickets = this.tickets.filter(ticket => ticket.allocated_to._id === user);
             this.tickets = filteredTickets;
@@ -142,6 +160,24 @@ export default {
             this.suspended.suspendedTicketAlert = true;
             this.suspended.suspendedTicket = ticket;
         },
+        loadModal(ticket) {
+            this.selectedTicket = ticket;
+            // this.$emit('selectedTicket', this.ticket);
+        },
+        openChat(ticket) {
+            if (ticket.chat !== null) {
+                this.isChatOpen = true;
+            } else {
+                let form = {
+                    ticket: ticket._id,
+                };
+                this.$http.post('http://localhost:3000/chat/create-chat', form).then(res => {
+                    this.selectedTicket.chat = res.data
+                    this.isChatOpen = true;
+                    this.chatCreated = true;
+                });
+            }
+        }
     },
 };
 </script>

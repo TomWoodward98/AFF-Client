@@ -78,7 +78,8 @@
                                         <strong>{{ status_error }}</strong>
                                     </span>
                                     <p class="m-0"><strong>Created at</strong></p>
-                                    <p>{{ ticket.created_at }}</p>
+                                    <p class="m-0">{{ ticketTime }}</p>
+                                    <p class="m-0">{{ ticketDate }}</p>
                                 </div>
                             </div>
                             <div class="col-6">
@@ -106,6 +107,12 @@
                     </div>
                 </form>
                 <div class="modal-footer">
+                    <button
+                        @click.prevent="switchToChat()"
+                        class="btn btn-info"
+                        data-target="#ticketChatModal"
+                        data-toggle="modal"
+                    >{{ ticket.chat !== null ? 'Chat' : 'Create Chat' }}</button>
                     <button
                         v-if="!currentUser.isClient"
                         @click.prevent="edit = !edit" 
@@ -165,6 +172,7 @@
 
 export default {
     name: "TicketModal",
+    
     data() {
         return {
             edit: false,
@@ -204,6 +212,17 @@ export default {
         supportUsers() {
             return this.users.filter(user => user.user_type.type === 'support');
         },
+        ticketTime() {
+            let time = this.ticket.created_at.slice(11,19);
+            return time;
+        },
+        ticketDate() {
+            let year = this.ticket.created_at.slice(0,4);
+            let month = this.ticket.created_at.slice(5,7);
+            let day = this.ticket.created_at.slice(8,10);
+            let date =  day + '-' + month + '-' + year;
+            return date;
+        },
     },
     methods: {
         clientEdit(editedStatus) {
@@ -235,21 +254,21 @@ export default {
 
             this.form.ticket = this.ticket;
 
-            // if (this.form.title.trim() === '') {
-            //     this.form.title = this.ticket.title;
-            // }
+            if (this.form.title.trim() === '') {
+                this.form.title = this.ticket.title;
+            }
 
-            // if (this.form.info.trim() === '') {
-            //     this.form.info = this.ticket.info;
-            // }
+            if (this.form.info.trim() === '') {
+                this.form.info = this.ticket.info;
+            }
             
-            // if (this.form.status === null) {
-            //     this.form.status = this.ticket.status;
-            // }
+            if (this.form.status === null) {
+                this.form.status = this.ticket.status;
+            }
 
-            // if (this.form.allocatedTo === null) {
-            //     this.form.allocatedTo = this.ticket.allocated_to;
-            // }
+            if (this.form.allocatedTo === null) {
+                this.form.allocatedTo = this.ticket.allocated_to;
+            }
 
             if (failed) {
                 return false;
@@ -280,6 +299,10 @@ export default {
                 this.info_error = sentError.ticket;
                 this.status_error = sentError.ticket;
             }
+        },
+        switchToChat() {
+            $('#' + this.dataTarget).modal('hide');
+            this.$emit('openChat', this.ticket);
         },
     },
 }

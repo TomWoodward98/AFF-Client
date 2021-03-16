@@ -1,9 +1,5 @@
 <template>
-    <div class="row">  
-        <div class="col-12">
-            <button @click="logout(currentUser)" class="btn btn-outline-primary">Logout</button>
-        </div>
-    </div>
+    <button @click="logout(currentUser)" class="nav-item nav-link border-0 bg-transparent">Logout</button>
 </template>
 
 <script>
@@ -24,7 +20,7 @@ export default {
         logout(currentUser){
             const baseURL = 'http://localhost:3000/api/logout';
             this.$http.post(baseURL, currentUser).then(res => {
-                this.$store.commit('setCurrentUser', {})
+                this.$store.commit('SET_CURRENT_USER', {})
                 this.$router.push('/welcome')
             });
         },
