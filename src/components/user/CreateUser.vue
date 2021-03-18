@@ -245,8 +245,6 @@ export default {
     name: "CreateDepartment",
     data() {
         return {
-            departments: [],
-            user_types: [],
             form : {
                 title: '',
                 first_name: '',
@@ -274,14 +272,21 @@ export default {
         dataTarget: String,
     },
     created() {
-        const baseURL = 'http://localhost:3000';
-        this.$http.get(baseURL + '/department/get-departments').then(res => {
-            this.departments = res.data;
-        });
+        // this.$http.get('/department/get-departments').then(res => {
+        //     this.departments = res.data;
+        // });
 
-        this.$http.get(baseURL + '/api/get-user-type').then(res => {
-            this.user_types = res.data;
-        });
+        // this.$http.get('/api/get-user-type').then(res => {
+        //     this.user_types = res.data;
+        // });
+    },
+    computed: {
+        departments() {
+            return this.$store.state.departments;
+        },
+        user_types() {
+            return this.$store.state.userTypes;
+        },
     },
     methods: {
         createUser() {
@@ -351,7 +356,7 @@ export default {
 
             this.creatingUser = true;
 
-            this.$http.post('http://localhost:3000/api/register', this.form).then(response => {
+            this.$http.post('/api/register', this.form).then(response => {
                 if (response.data.Error) {
                     this.creatingUser = false;
                     this.handleErrors(response.data.Error);

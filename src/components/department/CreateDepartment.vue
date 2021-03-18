@@ -85,7 +85,7 @@ export default {
 
             this.creatingDepartment = true;
 
-            this.$http.post('http://localhost:3000/department/create-department', this.form).then(response => {
+            this.$http.post('/department/create-department', this.form).then(response => {
                 if (response.data.Error) {
                     this.creatingDepartment = false;
                     this.handleErrors(response.data.Error);

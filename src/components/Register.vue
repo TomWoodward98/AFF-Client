@@ -262,164 +262,160 @@
 <script>
 
 export default {
-  name: 'Register',
-  
-  data() {
-    return {
-        departments: [],
-        user_types: [],
-        form: {
-            title: '',
-            first_name: '',
-            last_name: '',
-            email: '',
-            password: '',
-            password_confirmation: '',
-            department: null,
-            user_type: null,
+    name: 'Register',
+    
+    data() {
+        return {
+            form: {
+                title: '',
+                first_name: '',
+                last_name: '',
+                email: '',
+                password: '',
+                password_confirmation: '',
+                department: null,
+                user_type: null,
+            },
+            title_error: false,
+            first_name_error: false,
+            last_name_error: false,
+            email_error: false,
+            emailFormat: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+[.]+[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9-]+)*$/,
+            password_error: false,
+            password_confirmation_error: false,
+            department_error: false,
+            user_type_error: false,
+            registering: false,
+            errors: false,
+            successReg: false,
+        };
+    },
+    computed: {
+        departments() {
+            return this.$store.state.departments;
         },
-        title_error: false,
-        first_name_error: false,
-        last_name_error: false,
-        email_error: false,
-        emailFormat: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+[.]+[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9-]+)*$/,
-        password_error: false,
-        password_confirmation_error: false,
-        department_error: false,
-        user_type_error: false,
-        registering: false,
-        errors: false,
-        successReg: false,
-    };
-  },
-  created() {
-    const baseURL = 'http://localhost:3000';
-    this.$http.get(baseURL + '/department/get-departments').then(res => {
-        this.departments = res.data;
-    });
+        user_types() {
+            return this.$store.state.userTypes;
+        },
+    },
+    methods: {
+        submitForm() {
+            let failed = false;
 
-    this.$http.get(baseURL + '/api/get-user-type').then(res => {
-        this.user_types = res.data;
-    });
-  },
-  methods: {
-    submitForm() {
-        let failed = false;
+            this.title_error = false;
+            this.first_name_error = false;
+            this.last_name_error = false;
+            this.email_error = false;
+            this.password_error = false;
+            this.password_confirmation_error = false;
+            this.department_error = false;
+            this.user_type_error = false;
 
-        this.title_error = false;
-        this.first_name_error = false;
-        this.last_name_error = false;
-        this.email_error = false;
-        this.password_error = false;
-        this.password_confirmation_error = false;
-        this.department_error = false;
-        this.user_type_error = false;
-
-        if (this.form.title.trim() === '') {
-            failed = true;
-            this.title_error = 'Please enter your title'
-        }
-
-        if (this.form.first_name.trim() === '') {
-            failed = true;
-            this.first_name_error = 'Please enter your first name'
-        }
-
-        if (this.form.last_name.trim() === '') {
-            failed = true;
-            this.last_name_error = 'Please enter your last name'
-        }
-
-        if (this.form.email.trim() === '') {
-            failed = true;
-            this.email_error = 'Please fill out your email';
-        } else if (this.isEmail() === false) {
-            failed = true;
-            this.email_error = 'Please enter a valid email address';
-        }
-
-        if (this.form.password.trim() === '') {
-            failed = true;
-            this.password_error = 'Please enter a valid password'
-        }
-
-        if (this.form.password_confirmation.trim() === '') {
-            failed = true;
-            this.password_confirmation_error = 'Please confirm your password'
-        }
-
-        if (this.form.password !== this.form.password_confirmation) {
-            failed = true;
-            this.password_error = 'Your Passwords do not match'
-            this.password_confirmation_error = 'Your Passwords do not match'
-        }
-
-        if (this.form.department === null) {
-            failed = true;
-            this.department_error = 'Please enter your department'
-        }
-
-        if (this.form.user_type === null) {
-            failed = true;
-            this.user_type_error = 'Please select a user type, if unsure select client ando our admins will handle the rest'
-        }
-
-        if (failed) {
-            return false;
-        }
-
-        this.registering = true;
-
-        this.$http.post('http://localhost:3000/api/register', this.form).then(response => {
-            if (response.data.Error) {
-                this.errors = true;
-                this.registering = false;
-                const sentError = response.data;
-                this.handleErrors(sentError);
-            } else {
-                this.form.title = '';
-                this.form.first_name = '';
-                this.form.last_name = '';
-                this.form.email = '';
-                this.form.password = '';
-                this.form.password_confirmation = '';
-                this.form.department = null;
-                this.form.user_type = null;
-                this.registering = false;
-                this.successReg = true;
+            if (this.form.title.trim() === '') {
+                failed = true;
+                this.title_error = 'Please enter your title'
             }
-        });
+
+            if (this.form.first_name.trim() === '') {
+                failed = true;
+                this.first_name_error = 'Please enter your first name'
+            }
+
+            if (this.form.last_name.trim() === '') {
+                failed = true;
+                this.last_name_error = 'Please enter your last name'
+            }
+
+            if (this.form.email.trim() === '') {
+                failed = true;
+                this.email_error = 'Please fill out your email';
+            } else if (this.isEmail() === false) {
+                failed = true;
+                this.email_error = 'Please enter a valid email address';
+            }
+
+            if (this.form.password.trim() === '') {
+                failed = true;
+                this.password_error = 'Please enter a valid password'
+            }
+
+            if (this.form.password_confirmation.trim() === '') {
+                failed = true;
+                this.password_confirmation_error = 'Please confirm your password'
+            }
+
+            if (this.form.password !== this.form.password_confirmation) {
+                failed = true;
+                this.password_error = 'Your Passwords do not match'
+                this.password_confirmation_error = 'Your Passwords do not match'
+            }
+
+            if (this.form.department === null) {
+                failed = true;
+                this.department_error = 'Please enter your department'
+            }
+
+            if (this.form.user_type === null) {
+                failed = true;
+                this.user_type_error = 'Please select a user type, if unsure select client ando our admins will handle the rest'
+            }
+
+            if (failed) {
+                return false;
+            }
+
+            this.registering = true;
+
+            this.$http.post('/api/register', this.form).then(response => {
+                if (response.data.Error) {
+                    this.errors = true;
+                    this.registering = false;
+                    const sentError = response.data;
+                    this.handleErrors(sentError);
+                } else {
+                    this.form.title = '';
+                    this.form.first_name = '';
+                    this.form.last_name = '';
+                    this.form.email = '';
+                    this.form.password = '';
+                    this.form.password_confirmation = '';
+                    this.form.department = null;
+                    this.form.user_type = null;
+                    this.registering = false;
+                    this.successReg = true;
+                }
+            });
+        },
+        handleErrors(error) {
+            if (error.Error.title) {
+                this.title_error = error.Error.title;
+            }
+            if (error.Error.first_name) {
+                this.first_name_error = error.Error.first_name;
+            }
+            if (error.Error.last_name) {
+                this.last_name_error = error.Error.last_name;
+            }
+            if (error.Error.email) {
+                this.email_error = error.Error.email;
+            }
+            if (error.Error.password) {
+                this.password_error = error.Error.password;
+            }
+            if (error.Error.password_confirm) {
+                this.password_confirmation_error = error.Error.password_confirm;
+            }
+            if (error.Error.department) {
+                this.department_error = error.Error.department;
+            }
+            if (error.Error.user_type) {
+                this.user_type_error = error.Error.user_type;
+            }
+        },
+        isEmail() {
+            return this.emailFormat.test(this.form.email);
+        },
     },
-    handleErrors(error) {
-        if (error.Error.title) {
-            this.title_error = error.Error.title;
-        }
-        if (error.Error.first_name) {
-            this.first_name_error = error.Error.first_name;
-        }
-        if (error.Error.last_name) {
-            this.last_name_error = error.Error.last_name;
-        }
-        if (error.Error.email) {
-            this.email_error = error.Error.email;
-        }
-        if (error.Error.password) {
-            this.password_error = error.Error.password;
-        }
-        if (error.Error.password_confirm) {
-            this.password_confirmation_error = error.Error.password_confirm;
-        }
-        if (error.Error.department) {
-            this.department_error = error.Error.department;
-        }
-        if (error.Error.user_type) {
-            this.user_type_error = error.Error.user_type;
-        }
-    },
-    isEmail() {
-        return this.emailFormat.test(this.form.email);
-    },
-  },
 };
 </script>
 

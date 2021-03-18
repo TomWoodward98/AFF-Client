@@ -15,30 +15,60 @@ Vue.prototype.$http = axios;
 Vue.config.productionTip = false;
 
 Vue.use(VueFlashMessage, {
-  messageOptions: {
-    timeout: 3000,
-    pauseOnInteract: true,
-  },
+    messageOptions: {
+        timeout: 3000,
+        pauseOnInteract: true,
+    },
 });
 
 new Vue({
-  router,
-  store,
-  render: (h) => h(App),
-  mounted() {
-    this.getCurrentUser();
-    this.getStatuses();
-    this.getTickets();
-  },
-  methods: {
-    getCurrentUser() {
-      this.$store.dispatch('getCurrentUser');
+    router,
+    store,
+    render: (h) => h(App),
+    data() {
+        return {
+            userInstance: false,
+        }
     },
-    getStatuses() {
-      this.$store.dispatch('getStatuses')
+    watch: {
+        userInstance() {
+            if (this.userInstance === true) {
+                this.getCurrentUser();
+                this.getUsers();
+                this.getStatuses();
+                this.getTickets();
+            }
+        },
     },
-    getTickets() {
-      this.$store.dispatch('getTickets')
-    }
-  },
+    mounted() {
+        this.user();
+        this.getRegisterData();
+    },
+    methods: {
+        getRegisterData() {
+            this.$store.dispatch('getDepartments');
+            this.$store.dispatch('getUserTypes');
+        },
+        getCurrentUser() {
+            this.$store.dispatch('getCurrentUser');
+        },
+        getUsers() {
+            this.$store.dispatch('getUsers');
+        },
+        getStatuses() {
+            this.$store.dispatch('getStatuses')
+        },
+        getTickets() {
+            this.$store.dispatch('getTickets')
+        },
+        user() {
+            axios.get('/checkToken').then(res => {
+                if (res.status === 200) {
+                    this.userInstance = true;
+                } else {
+                    this.userInstance = false;
+                }
+            });
+        }
+    },
 }).$mount('#app');

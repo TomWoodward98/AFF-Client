@@ -46,13 +46,10 @@ export default {
             departments: [],
         };
     },
-    props: {
-        
-    },
-    mounted() {
-        this.$http.get('http://localhost:3000/department/get-departments').then(response => {
-            this.departments = response.data;
-        });
+    computed: {
+        storeDepartments() {
+            return this.departments = this.$store.state.departments;
+        }
     },
     methods: {
         addDepartment(department) {

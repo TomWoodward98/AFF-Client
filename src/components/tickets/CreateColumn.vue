@@ -86,7 +86,7 @@ export default {
 
             this.creatingColumn = true;
 
-            this.$http.post('http://localhost:3000/ticket/create-column', this.form).then(response => {
+            this.$http.post('/ticket/create-column', this.form).then(response => {
                 if (response.data.Error) {
                     this.creatingColumn = false;
                     this.handleErrors(response.data.Error);

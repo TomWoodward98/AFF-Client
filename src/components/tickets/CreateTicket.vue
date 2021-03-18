@@ -189,7 +189,7 @@ export default {
 
             this.creatingTicket = true;
 
-            this.$http.post('http://localhost:3000/ticket/create-ticket', this.form).then(response => {
+            this.$http.post('/ticket/create-ticket', this.form).then(response => {
                 if (response.data.Error) {
                     this.creatingTicket = false;
                     this.handleErrors(response.data.Error);

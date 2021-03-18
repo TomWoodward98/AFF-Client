@@ -68,7 +68,7 @@
                                         name="editStatus"
                                         v-model="form.status"
                                     >
-                                        <option value=""></option>
+                                        <option selected disabled value="">{{ticket.status.name}}</option>
                                         <option v-for="status in statuses" :key="status._id" :value="status">{{ status.name }}</option>
                                     </select>
                                     <span
@@ -94,7 +94,7 @@
                                         name="editAssigned"
                                         v-model="form.allocatedTo"
                                     >
-                                        <option value=""></option>
+                                        <option selected disabled value="">{{ ticket.allocated_to.email }}</option>
                                         <option v-for="user in supportUsers" :key="user._id" :value="user">{{ user.email }}</option>
                                     </select>
                                     <p class="m-0"><strong>Created By</strong></p>
@@ -183,8 +183,8 @@ export default {
                 id: null,
                 title: '',
                 info: '',
-                status: null,
-                allocatedTo: null,
+                status: '',
+                allocatedTo: '',
             },
             clientAddInfo: false,
             editingTicket: false,
@@ -241,7 +241,6 @@ export default {
                 } else if (this.statuses[i].name === 'Cancelled' && editedStatus === 'cancel') {
                     this.form.status = this.statuses[i];
                     this.editTicket();
-                    console.log('Hit here', this.form.status);
                     break;
                 }
             }
@@ -257,6 +256,7 @@ export default {
             this.status_error = false;
 
             this.form.ticket = this.ticket;
+            this.form.currentUser = this.currentUser;
 
             if (this.form.title.trim() === '') {
                 this.form.title = this.ticket.title;
@@ -266,11 +266,11 @@ export default {
                 this.form.info = this.ticket.info;
             }
             
-            if (this.form.status === null) {
+            if (this.form.status === '') {
                 this.form.status = this.ticket.status;
             }
 
-            if (this.form.allocatedTo === null) {
+            if (this.form.allocatedTo === '') {
                 this.form.allocatedTo = this.ticket.allocated_to;
             }
 
@@ -280,7 +280,7 @@ export default {
 
             this.editingTicket = true;
 
-            this.$http.post('http://localhost:3000/ticket/update-ticket', this.form).then(response => {
+            this.$http.post('/ticket/update-ticket', this.form).then(response => {
                 if (response.data.Error) {
                     this.editingTicket = false;
                     this.handleErrors(response.data.Error);
@@ -302,6 +302,15 @@ export default {
                 this.title_error = sentError.ticket;
                 this.info_error = sentError.ticket;
                 this.status_error = sentError.ticket;
+            }
+            if (sentError.title) {
+                this.title_error = sentError.ticket;
+            }
+            if (sentError.info) {
+                this.info_error = sentError.info;
+            }
+            if (sentError.status) {
+                this.status_error = sentError.status;
             }
         },
         switchToChat() {

@@ -59,15 +59,11 @@
 </template>
 
 <script>
-import Socket from './Socket';
 
 import SocketIO from 'socket.io-client';
 
 export default {
     name: "ChatModal",
-    components: {
-        Socket
-    },
     data() {
         return {
             messages: [],
@@ -75,7 +71,6 @@ export default {
             ready: false,
             info: [],
             connections: 0,
-            isConnected: false,
             socketMessage: '',
             socket: null,
             form: {
@@ -95,12 +90,12 @@ export default {
         socket() {
             if (this.socket) {
                 this.socket.on('connected', (data) => {
-                    this.isConnected = true;
+                    this.$store.commit('SOCKET_CONNECT')
                     this.connections++;
                     this.socketMessage = data;
                 });
                 this.socket.on('disconnected', (data) => {
-                    this.isConnected = false;
+                    this.$store.commit('SOCKET_DISCONNECT')
                     this.connections--;
                     this.socket = null;
                 });
@@ -124,10 +119,15 @@ export default {
     created() {
         if (this.ticket.chat) {
             let id = this.ticket._id
-            this.$http.get('http://localhost:3000/chat/get-chat/' + id).then(res => {
+            this.$http.get('/chat/get-chat/' + id).then(res => {
                 this.form.chat = res.data._id;
                 this.loadMessages(res.data);
             });
+        }
+    },
+    computed: {
+        isConnected() {
+            return this.$store.state.isConnected;
         }
     },
     methods: {
@@ -138,14 +138,14 @@ export default {
         },        
         startChat() {
             let roomId = this.ticket._id
-            let socket = SocketIO('http://localhost:4000', {
+            let socket = SocketIO('http://localhost:' + process.env.VUE_APP_SOCKET_PORT, {
                 query: { roomId },
             });
             this.socket = socket;
         },
         send() {
             if (this.socket) {
-                this.$http.post('http://localhost:3000/chat/send-message', this.form).then(res => {
+                this.$http.post('/chat/send-message', this.form).then(res => {
                     this.messages.push({
                         content: res.data.content,
                         chat: res.data.chat,
@@ -160,7 +160,7 @@ export default {
         },
         loadMessages(chat) {
             let id = chat._id;
-            this.$http.get('http://localhost:3000/chat/get-messages/'+ id).then(res => {
+            this.$http.get('/chat/get-messages/'+ id).then(res => {
                 this.messages = res.data
             })
         },

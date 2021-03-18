@@ -139,7 +139,7 @@
                                     required
                                     v-model="form.department"
                                 >
-                                    <option value=""></option>
+                                    <option selected disabled value="">{{ user.department.name }}</option>
                                     <option v-for="department in departments" :key="department._id" :value="department">{{ department.name }}</option>
                                 </select>
                                 <span
@@ -166,7 +166,7 @@
                                     required
                                     v-model="form.user_type"
                                 >
-                                    <option value=""></option>
+                                    <option selected disabled value="">{{ user.user_type.type }}</option>
                                     <option v-for="user_type in user_types" :key="user_type._id" :value="user_type">{{ user_type.type }}</option>
                                 </select>
                                 <span
@@ -193,16 +193,14 @@ export default {
     name: "EditUser",
     data() {
         return {
-            departments: [],
-            user_types: [],
             form : {
                 user: this.user,
                 title: '',
                 first_name: '',
                 last_name: '',
                 email: '',
-                department: null,
-                user_type: null,
+                department: '',
+                user_type: '',
                 approved: true,
             },
             title_error: false,
@@ -219,15 +217,13 @@ export default {
         dataTarget: String,
         user: Object,
     },
-    created() {
-        const baseURL = 'http://localhost:3000';
-        this.$http.get(baseURL + '/department/get-departments').then(res => {
-            this.departments = res.data;
-        });
-
-        this.$http.get(baseURL + '/api/get-user-type').then(res => {
-            this.user_types = res.data;
-        });
+    computed: {
+        departments() {
+            return this.$store.state.departments;
+        },
+        user_types() {
+            return this.$store.state.userTypes;
+        }
     },
     methods: {
         editUser() {
@@ -256,11 +252,11 @@ export default {
                 this.form.email = this.user.email;
             }
 
-            if (this.form.department === null) {
+            if (this.form.department === '') {
                 this.form.department = this.user.department;
             }
 
-            if (this.form.user_type === null) {
+            if (this.form.user_type === '') {
                 this.form.user_type = this.user.user_type;
             }
 
@@ -270,20 +266,13 @@ export default {
 
             this.editingUser = true;
 
-            this.$http.post('http://localhost:3000/api/update-user', this.form).then(response => {
+            this.$http.post('/api/update-user', this.form).then(response => {
                 if (response.data.Error) {
                     this.editingUser = false;
                     this.handleErrors(response.data.Error);
                 } else {
                     this.editingUser = false;
                     this.form = null;
-                    // this.form.title = '';
-                    // this.form.first_name = '';
-                    // this.form.last_name = '';
-                    // this.form.email = '';
-                    // this.form.department = null;
-                    // this.form.user_type = null;
-                    // this.form.approved = false;
                     this.$emit('userUpdated', response.data);
                     $('#' + this.dataTarget).modal('hide')
                 }

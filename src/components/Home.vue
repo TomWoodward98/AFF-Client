@@ -44,7 +44,7 @@
                 <span aria-hidden="true">&times;</span>
             </button>
         </div>
-        <div v-if="columns.length > 0" class="row mx-auto overflow-x-scroll flex-nowrap">
+        <div v-if="columns.length > 0" class="row mx-auto overflow-x-scroll flex-nowrap h-100">
             <ticket-columns 
                 v-for="column in columns" 
                 :currentUser="currentUser"
@@ -102,9 +102,7 @@ export default {
     },
     data() {
         return {
-            users: [],
             tickets: [],
-            columns: [],
             chatCreated: false,
             selectedTicket: {},
             suspended: {
@@ -118,21 +116,20 @@ export default {
         currentUser() {
             return this.$store.state.user;
         },
+        users() {
+            return this.$store.state.users;
+        },
         storeTickets() {
             return this.$store.state.tickets;
-        }
+        },
+        columns() {
+            return this.$store.state.statuses;
+        },
     },
-    created() {
-        const baseURL = 'http://localhost:3000/api/get-users';
-        this.$http.get(baseURL).then(res => {
-            this.users = res.data;
-        });
-        this.$http.get('http://localhost:3000/ticket/get-tickets').then(response => {
-            this.tickets = response.data;
-        });
-        // TODO:: Make it so we get this from store
-        this.$http.get('http://localhost:3000/ticket/get-columns').then(response => {
-            this.columns = response.data;
+    created() {   
+        this.$http.get('/ticket/get-tickets').then(response => {
+            this.$store.commit('SET_TICKETS', response.data);
+            this.tickets = this.$store.state.tickets;
         });
     },
     mounted() {
@@ -140,6 +137,7 @@ export default {
         if (!chatModal) {
             this.isChatOpen = false;
         }
+        
     },
     methods: {
         addTicket(ticket) {
@@ -176,7 +174,7 @@ export default {
 
 
         removeUserFilter() {
-            this.$http.get('http://localhost:3000/ticket/get-tickets').then(response => {
+            this.$http.get('/ticket/get-tickets').then(response => {
                 this.tickets = response.data;
             });
         },
@@ -195,7 +193,7 @@ export default {
                 let form = {
                     ticket: ticket._id,
                 };
-                this.$http.post('http://localhost:3000/chat/create-chat', form).then(res => {
+                this.$http.post('/chat/create-chat', form).then(res => {
                     this.selectedTicket.chat = res.data
                     this.isChatOpen = true;
                     this.chatCreated = true;

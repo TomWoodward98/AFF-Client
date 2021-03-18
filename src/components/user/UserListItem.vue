@@ -113,7 +113,7 @@ export default {
                 user: user,
                 approved: true,
             }
-            this.$http.post('http://localhost:3000/api/approve-user', form).then(response => {
+            this.$http.post('/api/approve-user', form).then(response => {
                 if (this.errors) {
                     this.handleErrors(this.errors);
                 } else {

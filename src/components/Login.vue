@@ -146,9 +146,7 @@ export default {
 
             this.loggingIn = true;
 
-            const baseURL = 'http://localhost:3000/api/login';
-
-            this.$http.post(baseURL,
+            this.$http.post('/api/login',
                 {
                     email: this.email.trim(),
                     password: this.password.trim(),
@@ -162,6 +160,8 @@ export default {
                         this.errors = false;
                         this.confirmation = true;
                         this.loadCurrentUser();
+                        this.loadUsers();
+                        this.loadStatuses();
                         this.loadTickets();
                         this.$router.push('home');
                     }
@@ -184,13 +184,23 @@ export default {
             }
         },
         loadCurrentUser() {
-            this.$http.get('http://localhost:3000/api/get-current-user').then((res) => {
+            this.$http.get('/api/get-current-user').then((res) => {
                 this.$store.commit('SET_CURRENT_USER', res.data);
             });
         },
+        loadUsers() {
+            this.$http.get('/api/get-users').then(response => {
+                this.$store.commit('SET_USERS', response.data);
+            });
+        },
         loadTickets() {
-            this.$http.get('http://localhost:3000/ticket/get-tickets').then(response => {
+            this.$http.get('/ticket/get-tickets').then(response => {
                 this.$store.commit('SET_TICKETS', response.data);
+            });
+        },
+        loadStatuses() {
+            this.$http.get('/ticket/get-columns').then(response => {
+                this.$store.commit('SET_STATUSES', response.data);
             });
         },
     },

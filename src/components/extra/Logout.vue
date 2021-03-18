@@ -18,10 +18,12 @@ export default {
     },
     methods: {
         logout(currentUser){
-            const baseURL = 'http://localhost:3000/api/logout';
+            const baseURL = '/api/logout';
             this.$http.post(baseURL, currentUser).then(res => {
                 this.$store.commit('SET_CURRENT_USER', {})
                 this.$store.commit('SET_TICKETS', [])
+                this.$store.commit('SET_STATUSES', [])
+                this.$store.commit('SET_USERS', [])
                 this.$router.push('/welcome')
             });
         },

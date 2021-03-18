@@ -5,6 +5,7 @@
         </button>
         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
             <button 
+                v-if="!currentUser.isAdmin"
                 class="dropdown-item" 
                 data-target="#createTicketModal"
                 data-toggle="modal"

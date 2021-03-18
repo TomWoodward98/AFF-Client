@@ -68,7 +68,7 @@ export default {
         };
     },
     mounted() {
-        this.$http.get('http://localhost:3000/api/get-users').then(response => {
+        this.$http.get('/api/get-users').then(response => {
             this.users = response.data;
         });
     },
@@ -94,7 +94,7 @@ export default {
             let form = {
                 userId: user._id,
             };
-            this.$http.post('http://localhost:3000/api/delete-user', form).then(response => {
+            this.$http.post('/api/delete-user', form).then(response => {
                 if (this.errors) {
                     this.handleErrors(this.errors);
                 } else {
