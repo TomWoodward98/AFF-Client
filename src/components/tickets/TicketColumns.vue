@@ -6,7 +6,7 @@
             </div>
             <tickets
                 v-for="ticket in filteredTickets" 
-                :key="ticket.id"
+                :key="ticket._id"
                 :currentUser="currentUser" 
                 :ticket="ticket"
                 @selectedTicket="loadModal($event)"
@@ -24,11 +24,6 @@ export default {
     components: {
         Tickets,
     },
-    data() {
-        return {
-            selectedTicket: {},
-        };
-    },
     props: {
         currentUser: Object,
         tickets: Array,
@@ -43,7 +38,6 @@ export default {
     },
     methods: {
         loadModal(ticket) {
-            this.selectedTicket = ticket;
             this.$emit('selectedTicket', ticket);
         },
         alertUserSus(ticket) {

@@ -9,9 +9,9 @@
                     method="post"
                 >
                     <div class="modal-header">
-                        <h5 v-if="!edit" class="modal-title" id="ModalLabel">{{ ticket.title }}</h5>
+                        <h5 v-if="!edit || currentUser.isAdmin" class="modal-title" id="ModalLabel">{{ ticket.title }}</h5>
                         <input
-                            v-else
+                            v-else-if="edit && !currentUser.isAdmin"
                             autocomplete="off"
                             class="form-control"
                             :class="{ 'is-invalid' : title_error }"
@@ -37,9 +37,9 @@
                             <div class="col-6">
                                 <div class="col-12">
                                     <p class="m-0"><strong>Description</strong></p>
-                                    <p v-if="(ticket.info && !edit) && !clientAddInfo">{{ ticket.info }}</p>
+                                    <p v-if="(ticket.info && !edit) && !clientAddInfo || currentUser.isAdmin">{{ ticket.info }}</p>
                                     <textarea
-                                        v-if="clientAddInfo || edit"
+                                        v-if="!currentUser.isAdmin && (clientAddInfo || edit)"
                                         autocomplete="off"
                                         class="form-control resize-none"
                                         :class="{ 'is-invalid' : info_error }"
@@ -58,9 +58,9 @@
                                         <strong>{{ info_error }}</strong>
                                     </span>
                                     <p class="m-0"><strong>Ticket Status</strong></p>
-                                    <p v-if="ticket.status && !edit">{{ ticket.status.name }}</p>
+                                    <p v-if="(ticket.status && !edit) || currentUser.isAdmin">{{ ticket.status.name }}</p>
                                     <select
-                                        v-else-if="ticket.status && edit"
+                                        v-else-if="!currentUser.isAdmin && (ticket.status && edit)"
                                         autocomplete="off"
                                         class="form-control"
                                         :class="{ 'is-invalid' : status_error }"
@@ -87,7 +87,7 @@
                                     <p class="m-0"><strong>Assigned to</strong></p>
                                     <p v-if="!edit">{{ ticket.allocated_to ? ticket.allocated_to.email : 'Assign a team member' }}</p>
                                     <select
-                                        v-else-if="edit"
+                                        v-if="edit && currentUser.isAdmin"
                                         autocomplete="off"
                                         class="form-control"
                                         id="editAssigned"
@@ -102,7 +102,7 @@
                                     <p class="m-0"><strong>Raised By</strong></p>
                                     <p>{{ ticket.raised_by ? ticket.raised_by.email : '' }}</p>
                                     <p class="m-0"><strong>Department</strong></p>
-                                    <p>{{ ticket.department.name }}</p>
+                                    <p>{{ ticket.department.name ? ticket.department.name : department }}</p>
                                 </div>
                             </div>
                         </div>
@@ -117,7 +117,7 @@
                         data-toggle="modal"
                     >{{ ticket.chat !== null ? 'Chat' : 'Create Chat' }}</button>
                     <button
-                        v-if="currentUser.isSupport"
+                        v-if="!currentUser.isClient"
                         @click.prevent="edit = !edit" 
                         :class="edit ? 'btn btn-outline-danger' : 'btn btn-info'"
                     >
@@ -201,6 +201,10 @@ export default {
         users: Array,
     },
     computed: {
+        department() {
+            let i = this.$store.state.departments.filter(item => this.ticket.department === item._id);
+            return i[0].name
+        },
         isUsersTicket() {
             if (this.ticket.raised_by && this.currentUser) {
                 return this.ticket.raised_by._id === this.currentUser._id;
@@ -285,11 +289,11 @@ export default {
                     this.editingTicket = false;
                     this.handleErrors(response.data.Error);
                 } else {
+                    this.editingTicket = false;
                     this.form.title = '';
                     this.form.info = '';
                     this.form.status = '';
                     this.form.allocatedTo = '';
-                    this.editingTicket = false;
                     this.edit = false;
                     this.clientAddInfo = false;
                     this.$emit('ticketEdited', response.data);

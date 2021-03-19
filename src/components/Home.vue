@@ -112,6 +112,11 @@ export default {
             isChatOpen: false,
         };
     },
+    watch: {
+        selectedTicket() {
+            this.editTicket(this.selectedTicket)
+        }
+    },
     computed: {
         currentUser() {
             return this.$store.state.user;
@@ -148,6 +153,7 @@ export default {
             for (let i = 0; i < tickets.length; i++) {
                 if (tickets[i]._id === ticket._id) {
                     this.tickets.splice(i, 1, ticket);
+                    this.selectedTicket = ticket;
                 }
             }
         },
