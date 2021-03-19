@@ -51,6 +51,9 @@ export default {
             return this.departments = this.$store.state.departments;
         }
     },
+    created() {
+        this.departments = this.$store.state.departments;
+    },
     methods: {
         addDepartment(department) {
             this.departments.push(department);
