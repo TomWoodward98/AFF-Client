@@ -163,6 +163,8 @@ export default {
                         this.loadUsers();
                         this.loadStatuses();
                         this.loadTickets();
+                        this.loadDepartments();
+                        this.loadUserTypes();
                         this.$router.push('home');
                     }
                 }
@@ -201,6 +203,16 @@ export default {
         loadStatuses() {
             this.$http.get('/ticket/get-columns').then(response => {
                 this.$store.commit('SET_STATUSES', response.data);
+            });
+        },
+        loadDepartments() {
+            this.$http.get('/department/get-departments').then(response => {
+                this.$store.commit('SET_DEPARTMENTS', response.data);
+            });
+        },
+        loadUserTypes() {
+            this.$http.get('/api/get-user-type').then(response => {
+                this.$store.commit('SET_USER_TYPES', response.data);
             });
         },
     },

@@ -19,7 +19,7 @@ export default {
     methods: {
         logout(currentUser){
             const baseURL = '/api/logout';
-            this.$http.post(baseURL, currentUser).then(res => {
+            this.$http.post(baseURL).then(res => {
                 this.$store.commit('SET_CURRENT_USER', {})
                 this.$store.commit('SET_TICKETS', [])
                 this.$store.commit('SET_STATUSES', [])

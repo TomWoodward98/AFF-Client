@@ -176,7 +176,7 @@ export default {
                 this.info_error = 'Please give a description of the ticket'
             }
 
-            if (this.form.raisedBy === null && (this.currentUser.isAdmin || this.currentUser.isSupport)) {
+            if ((this.form.raisedBy === null || this.form.raisedBy === '') && (this.currentUser.isAdmin || this.currentUser.isSupport)) {
                 failed = true;
                 this.raisedBy_error = 'Please select who raised the ticket'
             } else if (this.currentUser.isClient) {

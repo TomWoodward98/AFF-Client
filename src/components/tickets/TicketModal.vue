@@ -94,7 +94,7 @@
                                         name="editAssigned"
                                         v-model="form.allocatedTo"
                                     >
-                                        <option selected disabled value="">{{ ticket.allocated_to.email }}</option>
+                                        <option selected disabled value="">{{ ticket.allocated_to ? ticket.allocated_to.email : '' }}</option>
                                         <option v-for="user in supportUsers" :key="user._id" :value="user">{{ user.email }}</option>
                                     </select>
                                     <p class="m-0"><strong>Created By</strong></p>
@@ -102,7 +102,7 @@
                                     <p class="m-0"><strong>Raised By</strong></p>
                                     <p>{{ ticket.raised_by ? ticket.raised_by.email : '' }}</p>
                                     <p class="m-0"><strong>Department</strong></p>
-                                    <p>{{ ticket.raised_by ? ticket.raised_by.department.name : '' }}</p>
+                                    <p>{{ ticket.department.name }}</p>
                                 </div>
                             </div>
                         </div>
