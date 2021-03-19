@@ -194,6 +194,7 @@ export default {
                     this.creatingTicket = false;
                     this.handleErrors(response.data.Error);
                 } else {
+                    this.creatingTicket = false;
                     this.form.title = '';
                     this.form.info = '';
                     this.form.allocatedTo = null;
